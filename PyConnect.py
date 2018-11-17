@@ -17,15 +17,16 @@
 from contextlib import closing
 import argparse
 import datetime
+import discord
 import io
 import requests
-import select
-import socket
 import sys
 
 ###############################################################################
 class Client():
 ###############################################################################
+    bot = discord.Client()
+
     def __enter__(self):
         return self
 
@@ -38,18 +39,9 @@ class Client():
 ###############################################################################
     def __init__(self):
         parser = argparse.ArgumentParser(description='Process command-line.')
-        parser.add_argument('-c', metavar='string', required=False,
-                                help='GET HTTP request command.')
         parser.add_argument('-v', action="store_true", required=False,
                                 help='Verbose to log file.')
         self.args = parser.parse_args()
-
-        print('Loading PyConnect.ini.')
-        self.HOST = Client.getCfg(self, '[HOST]')
-        self.LOG  = Client.getCfg(self, '[LOG]')
-
-        if self.args.v is True:
-            print('Verbose: ' + self.LOG)
 
 ###############################################################################
     def doLog(self, input):
@@ -67,16 +59,25 @@ class Client():
 
 ###############################################################################
     def Get(self):
-        if self.args.c is None:
-            r = requests.get(self.HOST)
-        else:
-            r = requests.get(self.args.c)
-
+        r = requests.get(self.HOST)
         print(r.status_code)
         print(r.text)
-        Client.doLog(self, r.text)
+
+###############################################################################
+    @bot.event
+    async def on_ready():
+        print('The bot is ready!')
+        await Client.bot.change_presence(game=discord.Game(name='Tracker bot'))
+
+###############################################################################
+    @bot.event
+    async def on_message(message):
+        if message.content == '!status':
+            await Client.bot.send_message(message.channel, 'Currently tracking '
+                    + Client.getCfg(message, '[TARGET]'))
 
 ###############################################################################
 if __name__ == "__main__":
     with Client() as client:
-        client.Get()
+        client.bot.run(client.getCfg('[TOKEN]'))
+
