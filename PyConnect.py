@@ -15,11 +15,11 @@
 #!    Copyright Cody Ferber, 2016.
 ###############################################################################
 from contextlib import closing
-import argparse
+import aiohttp
+import asyncio
 import datetime
 import discord
 import io
-import requests
 import sys
 
 ###############################################################################
@@ -36,48 +36,62 @@ class Client():
 #       print(traceback)
         return True
 
-###############################################################################
     def __init__(self):
-        parser = argparse.ArgumentParser(description='Process command-line.')
-        parser.add_argument('-v', action="store_true", required=False,
-                                help='Verbose to log file.')
-        self.args = parser.parse_args()
+        return None
 
 ###############################################################################
-    def doLog(self, input):
-        if self.args.v is True:
-            with closing(open(self.LOG, 'a')) as file:
-                for row in input.splitlines():
-                    file.write(row + '\n')
-
-###############################################################################
-    def getCfg(self, cfgvar):
+    def get_cfg(self, cfgvar):
         with closing(open('PyConnect.ini', 'r')) as file:
             buffer = file.read(None).splitlines()
             value = buffer.pop(buffer.index(cfgvar) + 1)
             return value
 
 ###############################################################################
-    def Get(self):
-        r = requests.get(self.HOST)
-        print(r.status_code)
-        print(r.text)
+    async def get_request(self, getvar):
+        async with aiohttp.get(getvar) as r:
+            return r.status, r.url
 
 ###############################################################################
     @bot.event
     async def on_ready():
         print('The bot is ready!')
-        await Client.bot.change_presence(game=discord.Game(name='Tracker bot'))
+        await Client.bot.change_presence(game=discord.Game(name='Project 1999'))
 
 ###############################################################################
     @bot.event
     async def on_message(message):
+        if message.content == '!shutdown':
+            print('Shutting down!')
+            await Client.bot.send_message(message.channel, 'Shutting down!')
+            await Client.bot.close()
         if message.content == '!status':
+            await Client.bot.send_message(message.channel,
+                    await Client.get_request(None, 'http://www.discord.com'))
             await Client.bot.send_message(message.channel, 'Currently tracking '
-                    + Client.getCfg(message, '[TARGET]'))
+                    + Client.get_cfg(None, '[TARGET]'))
 
 ###############################################################################
-if __name__ == "__main__":
+    async def track():
+        await Client.bot.wait_until_ready()
+        while not Client.bot.is_closed:
+            with closing(open(Client.get_cfg(None, '[PARSE]'), 'r')) as file:
+                buffer = file.read(None)
+                value = buffer.find(Client.get_cfg(None, '[TARGET]'))
+                if value is not -1:
+                    await Client.bot.send_message(
+                            Client.bot.get_channel('513486044772171784'),
+                                    'Target found!')
+                    await asyncio.sleep(30)
+                else:
+                    await asyncio.sleep(30)
+
+###############################################################################
+def main():
     with Client() as client:
-        client.bot.run(client.getCfg('[TOKEN]'))
+        client.bot.loop.create_task(Client.track())
+        client.bot.run(client.get_cfg('[TOKEN]'))
+
+if __name__ == "__main__":
+    main()
+
 
