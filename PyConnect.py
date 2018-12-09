@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3 -u
 ###############################################################################
 #!    This program is free software: you can redistribute it and/or modify
 #!    it under the terms of the GNU General Public License as published by
@@ -15,12 +16,10 @@
 #!    Copyright Cody Ferber, 2016.
 ###############################################################################
 from contextlib import closing
-import aiohttp
 import asyncio
 import datetime
 import discord
 import io
-import sys
 
 ###############################################################################
 class Client():
@@ -47,26 +46,21 @@ class Client():
             return value
 
 ###############################################################################
-    async def get_request(self, getvar):
-        async with aiohttp.get(getvar) as r:
-            return r.status, r.url
-
-###############################################################################
     @bot.event
     async def on_ready():
-        print('The bot is ready!')
+        print('<p>The bot is ready!</p>')
         await Client.bot.change_presence(game=discord.Game(name='Project 1999'))
 
 ###############################################################################
     @bot.event
     async def on_message(message):
         if message.content == '!shutdown':
-            print('Shutting down!')
+            print('<p>Shutting down!</p></body></html?')
             await Client.bot.send_message(message.channel, 'Shutting down!')
             await Client.bot.close()
         if message.content == '!status':
-            await Client.bot.send_message(message.channel,
-                    await Client.get_request(None, 'http://www.discord.com'))
+            print('<p>Currently tracking: ' + Client.get_cfg(None, '[TARGET]')
+                    + '</p>')
             await Client.bot.send_message(message.channel, 'Currently tracking '
                     + Client.get_cfg(None, '[TARGET]'))
 
@@ -78,6 +72,7 @@ class Client():
                 buffer = file.read(None)
                 value = buffer.find(Client.get_cfg(None, '[TARGET]'))
                 if value is not -1:
+                    print('<p>Target found!</p>')
                     await Client.bot.send_message(
                             Client.bot.get_channel('513486044772171784'),
                                     'Target found!')
@@ -88,10 +83,12 @@ class Client():
 ###############################################################################
 def main():
     with Client() as client:
+        print('Content-Type:text/html,Connection: keep-alive\r\n\r\n')
+        print('<html lang="en"><head><title>P99 Tracker Bot</title></head>')
+        print('<body><h1>P99 Tracker Bot</h1>')
         client.bot.loop.create_task(Client.track())
         client.bot.run(client.get_cfg('[TOKEN]'))
 
 if __name__ == "__main__":
     main()
-
 
