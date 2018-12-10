@@ -48,19 +48,19 @@ class Client():
 ###############################################################################
     @bot.event
     async def on_ready():
-        print('<p>The bot is ready!</p>')
+        print('<p><b>The bot is ready!</b></p>')
         await Client.bot.change_presence(game=discord.Game(name='Project 1999'))
 
 ###############################################################################
     @bot.event
     async def on_message(message):
         if message.content == '!shutdown':
-            print('<p>Shutting down!</p></body></html?')
+            print('<p><b>Shutting down!</b></p></body></html?')
             await Client.bot.send_message(message.channel, 'Shutting down!')
             await Client.bot.close()
         if message.content == '!status':
-            print('<p>Currently tracking: ' + Client.get_cfg(None, '[TARGET]')
-                    + '</p>')
+            print('<p><b>Currently tracking: ' + Client.get_cfg(None, '[TARGET]')
+                    + '</b></p>')
             await Client.bot.send_message(message.channel, 'Currently tracking '
                     + Client.get_cfg(None, '[TARGET]'))
 
@@ -72,7 +72,7 @@ class Client():
                 buffer = file.read(None)
                 value = buffer.find(Client.get_cfg(None, '[TARGET]'))
                 if value is not -1:
-                    print('<p>Target found!</p>')
+                    print('<p><b>Target found!</b></p>')
                     await Client.bot.send_message(
                             Client.bot.get_channel('513486044772171784'),
                                     'Target found!')
@@ -84,7 +84,14 @@ class Client():
 def main():
     with Client() as client:
         print('Content-Type:text/html,Connection: keep-alive\r\n\r\n')
-        print('<html lang="en"><head><title>P99 Tracker Bot</title></head>')
+        print('<html lang="en"><head><style>body {')
+        print('background-image: url(http://test-it.us/background.jpg);')
+        print('background-position: center;')
+        print('background-repeat: no-repeat;')
+        print('background-size: cover;')
+        print('color: white;')
+        print('text-align: left; }</style>')
+        print('<title>P99 Tracker Bot</title></head>')
         print('<body><h1>P99 Tracker Bot</h1>')
         client.bot.loop.create_task(Client.track())
         client.bot.run(client.get_cfg('[TOKEN]'))
