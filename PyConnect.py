@@ -76,9 +76,7 @@ class Client():
                     await Client.bot.send_message(
                             await Client.bot.get_user_info('366384371491667969'),
                                     'Target found!')
-                    await asyncio.sleep(0.5)
-                else:
-                    await asyncio.sleep(0.5)
+                await asyncio.sleep(0.5)
 
 ###############################################################################
 def main():
