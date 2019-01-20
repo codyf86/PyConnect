@@ -69,16 +69,16 @@ class Client():
         await Client.bot.wait_until_ready()
         while not Client.bot.is_closed:
             with closing(open(Client.get_cfg(None, '[PARSE]'), 'r')) as file:
-                buffer = file.read(None)
-                value = buffer.find(Client.get_cfg(None, '[TARGET]'))
-                if value is not -1:
+                buffer = file.readlines(None)
+                value = Client.get_cfg(None, '[TARGET]')
+                if value in buffer[-1]:
                     print('<p><b>Target found!</b></p>')
                     await Client.bot.send_message(
-                            Client.bot.get_channel('513486044772171784'),
+                            await Client.bot.get_user_info('366384371491667969'),
                                     'Target found!')
-                    await asyncio.sleep(30)
+                    await asyncio.sleep(0.5)
                 else:
-                    await asyncio.sleep(30)
+                    await asyncio.sleep(0.5)
 
 ###############################################################################
 def main():
