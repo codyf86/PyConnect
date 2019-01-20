@@ -16,6 +16,7 @@
 #!    Copyright Cody Ferber, 2016.
 ###############################################################################
 from contextlib import closing
+from pygtail import Pygtail
 import asyncio
 import datetime
 import discord
@@ -68,15 +69,14 @@ class Client():
     async def track():
         await Client.bot.wait_until_ready()
         while not Client.bot.is_closed:
-            with closing(open(Client.get_cfg(None, '[PARSE]'), 'r')) as file:
-                buffer = file.readlines(None)
-                value = Client.get_cfg(None, '[TARGET]')
-                if value in buffer[-1]:
+          value = Client.get_cfg(None, '[TARGET]')
+          for line in Pygtail(Client.get_cfg(None, '[PARSE]')):
+                if value in line:
                     print('<p><b>Target found!</b></p>')
                     await Client.bot.send_message(
                             await Client.bot.get_user_info('366384371491667969'),
                                     'Target found!')
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(5)
 
 ###############################################################################
 def main():
