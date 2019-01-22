@@ -60,8 +60,8 @@ class Client():
             await Client.bot.send_message(message.channel, 'Shutting down!')
             await Client.bot.close()
         if message.content == '!status':
-            print('<p><b>Currently tracking: ' + Client.get_cfg(None, '[TARGET]')
-                    + '</b></p>')
+            print('<p><b>Currently tracking: '
+                    + Client.get_cfg(None, '[TARGET]') + '</b></p>')
             await Client.bot.send_message(message.channel, 'Currently tracking '
                     + Client.get_cfg(None, '[TARGET]'))
 
@@ -69,21 +69,21 @@ class Client():
     async def track():
         await Client.bot.wait_until_ready()
         while not Client.bot.is_closed:
-          value = Client.get_cfg(None, '[TARGET]')
-          for line in Pygtail(Client.get_cfg(None, '[PARSE]')):
+            value = Client.get_cfg(None, '[TARGET]')
+            for line in Pygtail(Client.get_cfg(None, '[PARSE]')):
                 if value in line:
-                    print('<p><b>Target found!</b></p>')
+                    print('<p><b>@CodyF86 -> Target found!</b></p>')
                     await Client.bot.send_message(
                             await Client.bot.get_user_info('366384371491667969'),
-                                    'Target found!')
-                await asyncio.sleep(5)
+                                    '<@!366384371491667969> -> Target found!')
+            await asyncio.sleep(5)
 
 ###############################################################################
 def main():
     with Client() as client:
         print('Content-Type:text/html,Connection: keep-alive\r\n\r\n')
         print('<html lang="en"><head><style>body {')
-        print('background-image: url(http://test-it.us/background.jpg);')
+        print('background-image: url(https://test-it.us/background.jpg);')
         print('background-position: center;')
         print('background-repeat: no-repeat;')
         print('background-size: cover;')
