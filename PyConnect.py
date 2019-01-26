@@ -16,6 +16,8 @@
 #!    Copyright Cody Ferber, 2016.
 ###############################################################################
 from contextlib import closing
+from discord.ext import commands
+from discord.ext.commands import Bot
 from pygtail import Pygtail
 import asyncio
 import datetime
@@ -25,7 +27,7 @@ import io
 ###############################################################################
 class Client():
 ###############################################################################
-    bot = discord.Client()
+    bot = commands.Bot(command_prefix='!')
 
     def __enter__(self):
         return self
@@ -49,48 +51,39 @@ class Client():
 ###############################################################################
     @bot.event
     async def on_ready():
-        print('<p><b>The bot is ready!</b></p>')
+        print('The bot is ready!')
         await Client.bot.change_presence(game=discord.Game(name='Project 1999'))
+
+###############################################################################
+    @bot.command(pass_context=True)
+    @commands.cooldown(1, 30, commands.BucketType.channel)
+    async def batphone(ctx):
+        role = discord.utils.get(ctx.message.server.roles,
+                            name=Client.get_cfg(None, '[ROLE]'))
+        await Client.bot.say('{0}'.format(role.mention) + ' -> Batphone!')
 
 ###############################################################################
     @bot.event
     async def on_message(message):
-        if message.content == '!shutdown':
-            print('<p><b>Shutting down!</b></p></body></html?')
-            await Client.bot.send_message(message.channel, 'Shutting down!')
-            await Client.bot.close()
-        if message.content == '!status':
-            print('<p><b>Currently tracking: '
-                    + Client.get_cfg(None, '[TARGET]') + '</b></p>')
-            await Client.bot.send_message(message.channel, 'Currently tracking '
-                    + Client.get_cfg(None, '[TARGET]'))
+        await Client.bot.process_commands(message)
 
 ###############################################################################
     async def track():
         await Client.bot.wait_until_ready()
         while not Client.bot.is_closed:
+            channel = discord.utils.get(
+                    Client.bot.get_all_channels(),
+                            name=Client.get_cfg(None, '[CHANNEL]'))
             value = Client.get_cfg(None, '[TARGET]')
             for line in Pygtail(Client.get_cfg(None, '[PARSE]')):
                 if value in line:
-                    print('<p><b>@CodyF86 -> Target found!</b></p>')
-                    await Client.bot.send_message(
-                            await Client.bot.get_user_info('366384371491667969'),
-                                    '<@!366384371491667969> -> Target found!')
+                    print('Target found! Activating bat signal!')
+                    await Client.bot.send_message(channel, '!batsignal')
             await asyncio.sleep(5)
 
 ###############################################################################
 def main():
     with Client() as client:
-        print('Content-Type:text/html,Connection: keep-alive\r\n\r\n')
-        print('<html lang="en"><head><style>body {')
-        print('background-image: url(https://test-it.us/background.jpg);')
-        print('background-position: center;')
-        print('background-repeat: no-repeat;')
-        print('background-size: cover;')
-        print('color: white;')
-        print('text-align: left; }</style>')
-        print('<title>P99 Tracker Bot</title></head>')
-        print('<body><h1>P99 Tracker Bot</h1>')
         client.bot.loop.create_task(Client.track())
         client.bot.run(client.get_cfg('[TOKEN]'))
 
