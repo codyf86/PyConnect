@@ -28,6 +28,7 @@ import io
 class Client():
 ###############################################################################
     bot = commands.Bot(command_prefix='!')
+    target = ''
 
     def __enter__(self):
         return self
@@ -61,7 +62,7 @@ class Client():
         role = discord.utils.get(ctx.message.server.roles,
                             name='Batphone')
         await Client.bot.say('{0}'.format(role.mention) + ' -> '
-                            + Client.get_cfg(None, '[TARGET]'))
+                            + Client.target)
 
 ###############################################################################
     @bot.event
@@ -76,7 +77,6 @@ class Client():
                         + Client.get_cfg(None, '[PARSE]'))
         await Client.bot.say('Currently tracking: '
                         + Client.get_cfg(None, '[TARGET]'))
-        
 
 ###############################################################################
     async def track():
@@ -89,6 +89,7 @@ class Client():
                     await Client.bot.send_message(
                             Client.bot.get_channel('538773508826726417'),
                                     '!batsignal')
+                    Client.target = line
             await asyncio.sleep(5)
 
 ###############################################################################
