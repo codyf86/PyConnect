@@ -59,8 +59,9 @@ class Client():
     @commands.cooldown(1, 30, commands.BucketType.channel)
     async def batphone(ctx):
         role = discord.utils.get(ctx.message.server.roles,
-                            name=Client.get_cfg(None, '[ROLE]'))
-        await Client.bot.say('{0}'.format(role.mention) + ' -> Batphone!')
+                            name='Batphone')
+        await Client.bot.say('{0}'.format(role.mention) + ' -> '
+                            + Client.get_cfg(None, '[TARGET]'))
 
 ###############################################################################
     @bot.event
@@ -68,17 +69,26 @@ class Client():
         await Client.bot.process_commands(message)
 
 ###############################################################################
+    @bot.command(pass_context=True)
+    async def status(ctx):
+        await Client.bot.say('(T)echnology for (P)repared (A)egis (R)aiding')
+        await Client.bot.say('Parsing from: '
+                        + Client.get_cfg(None, '[PARSE]'))
+        await Client.bot.say('Currently tracking: '
+                        + Client.get_cfg(None, '[TARGET]'))
+        
+
+###############################################################################
     async def track():
         await Client.bot.wait_until_ready()
         while not Client.bot.is_closed:
-            channel = discord.utils.get(
-                    Client.bot.get_all_channels(),
-                            name=Client.get_cfg(None, '[CHANNEL]'))
             value = Client.get_cfg(None, '[TARGET]')
             for line in Pygtail(Client.get_cfg(None, '[PARSE]')):
                 if value in line:
                     print('Target found! Activating bat signal!')
-                    await Client.bot.send_message(channel, '!batsignal')
+                    await Client.bot.send_message(
+                            Client.bot.get_channel('538773508826726417'),
+                                    '!batsignal')
             await asyncio.sleep(5)
 
 ###############################################################################
