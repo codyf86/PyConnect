@@ -72,10 +72,29 @@ class Client():
 
 ###############################################################################
     @bot.command(pass_context=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def set(ctx, arg1, arg2):
+        if arg1 == 'channel':
+            Client.channel = arg2
+            await Client.bot.say('Channel set to: ' + Client.channel)
+        if arg1 == 'parse':
+            Client.parse = arg2
+            await Client.bot.say('Parse file set to: ' + Client.parse)
+        if arg1 == 'role':
+            Client.role = arg2
+            await Client.bot.say('Role to mention set to: ' + Client.role)
+        if arg1 == 'target':
+            Client.target = arg2
+            await Client.bot.say('Target set to: ' + Client.target)
+
+###############################################################################
+    @bot.command(pass_context=True)
     async def status(ctx):
         await Client.bot.say('(T)echnology for (P)repared (A)egis (R)aiding')
-        await Client.bot.say('Parsing from: ' + Client.parse)
-        await Client.bot.say('Currently tracking: ' + Client.target)
+        await Client.bot.say('Currently parsing file: ' + Client.parse)
+        await Client.bot.say('Currently tracking target: ' + Client.target)
+        await Client.bot.say('Currently talking in channel: ' + Client.channel)
+        await Client.bot.say('Currently batphoning role: ' + Client.role)
 
 ###############################################################################
     async def track():
