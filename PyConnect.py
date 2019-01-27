@@ -28,7 +28,6 @@ import io
 class Client():
 ###############################################################################
     bot = commands.Bot(command_prefix='!')
-    target = ''
 
     def __enter__(self):
         return self
@@ -40,6 +39,10 @@ class Client():
         return True
 
     def __init__(self):
+        Client.channel = Client.get_cfg(None, '[CHANNEL]')
+        Client.parse   = Client.get_cfg(None, '[PARSE]')
+        Client.role    = Client.get_cfg(None, '[ROLE]')
+        Client.target  = Client.get_cfg(None, '[TARGET]')
         return None
 
 ###############################################################################
@@ -59,10 +62,8 @@ class Client():
     @bot.command(pass_context=True)
     @commands.cooldown(1, 30, commands.BucketType.channel)
     async def batphone(ctx):
-        role = discord.utils.get(ctx.message.server.roles,
-                            name='Batphone')
-        await Client.bot.say('{0}'.format(role.mention) + ' -> '
-                            + Client.target)
+        role = discord.utils.get(ctx.message.server.roles, name=Client.role)
+        await Client.bot.say('{0}'.format(role.mention) + ' -> ' + Client.fte)
 
 ###############################################################################
     @bot.event
@@ -73,23 +74,19 @@ class Client():
     @bot.command(pass_context=True)
     async def status(ctx):
         await Client.bot.say('(T)echnology for (P)repared (A)egis (R)aiding')
-        await Client.bot.say('Parsing from: '
-                        + Client.get_cfg(None, '[PARSE]'))
-        await Client.bot.say('Currently tracking: '
-                        + Client.get_cfg(None, '[TARGET]'))
+        await Client.bot.say('Parsing from: ' + Client.parse)
+        await Client.bot.say('Currently tracking: ' + Client.target)
 
 ###############################################################################
     async def track():
         await Client.bot.wait_until_ready()
         while not Client.bot.is_closed:
-            value = Client.get_cfg(None, '[TARGET]')
-            for line in Pygtail(Client.get_cfg(None, '[PARSE]')):
-                if value in line:
+            for line in Pygtail(Client.parse):
+                if Client.target in line:
                     print('Target found! Activating bat signal!')
                     await Client.bot.send_message(
-                            Client.bot.get_channel('538773508826726417'),
-                                    '!batsignal')
-                    Client.target = line
+                        Client.bot.get_channel(Client.channel), '!batsignal')
+                    Client.fte = line
             await asyncio.sleep(5)
 
 ###############################################################################
