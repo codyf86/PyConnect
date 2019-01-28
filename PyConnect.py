@@ -73,14 +73,27 @@ class Client():
 
 ###############################################################################
     @bot.command(pass_context=True)
-    @commands.cooldown(1, 5, commands.BucketType.channel)
-    async def roll(ctx, arg1):
+    @commands.cooldown(10, 30, commands.BucketType.channel)
+    async def roll(ctx, *args):
+        x = 0
         await Client.bot.say('A random die is rolled by '
                                 + ctx.message.author.name + ' .')
-        await Client.bot.say('It could have been any number between 0 and '
-                                + arg1 + ', but this time it turned up a '
-                                        + str(randint(0, int(arg1))) + '.')
-        
+        for num in args:
+            if num:
+                x = x + 1
+        if x == 1:
+            await Client.bot.say('It could have been any number between 0'
+                   + ' and ' + args[0] + ', but this time it turned up a '
+                            + str(randint(0, int(args[0]))) + '.')
+        elif x == 2:
+            await Client.bot.say('It could have been any number between '
+                    + args[0] + ' and ' + args[1]
+                            + ', but this time it turned up a '
+                                    + str(randint(int(args[0]), int(args[1])))
+                                            + '.')
+        else:
+            await Client.bot.say('Invalid number of inputs!')
+
 ###############################################################################
     @bot.command(pass_context=True)
     @commands.cooldown(1, 5, commands.BucketType.channel)
