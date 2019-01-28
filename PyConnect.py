@@ -43,7 +43,9 @@ class Client():
         Client.channel = Client.get_cfg(None, '[CHANNEL]')
         Client.parse   = Client.get_cfg(None, '[PARSE]')
         Client.role    = Client.get_cfg(None, '[ROLE]')
-        Client.target  = Client.get_cfg(None, '[TARGET]')
+        Client.target1  = Client.get_cfg(None, '[TARGET1]')
+        Client.target2  = Client.get_cfg(None, '[TARGET2]')
+        Client.target3  = Client.get_cfg(None, '[TARGET3]')
         return None
 
 ###############################################################################
@@ -107,25 +109,32 @@ class Client():
         if arg1 == 'role':
             Client.role = arg2
             await Client.bot.say('Role to mention set to: ' + Client.role)
-        if arg1 == 'target':
-            Client.target = arg2
-            await Client.bot.say('Target set to: ' + Client.target)
+        if arg1 == 'target1':
+            Client.target1 = arg2
+            await Client.bot.say('Target1 set to: ' + Client.target1)
+        if arg1 == 'target2':
+            Client.target2 = arg2
+            await Client.bot.say('Target2 set to: ' + Client.target2)
+        if arg1 == 'target3':
+            Client.target3 = arg2
+            await Client.bot.say('Target3 set to: ' + Client.target3)
 
 ###############################################################################
     @bot.command(pass_context=True)
     async def status(ctx):
         await Client.bot.say('(T)echnology for (P)repared (A)egis (R)aiding')
-        await Client.bot.say('Currently parsing file: ' + Client.parse)
-        await Client.bot.say('Currently tracking target: ' + Client.target)
         await Client.bot.say('Currently talking in channel: ' + Client.channel)
+        await Client.bot.say('Currently parsing file: ' + Client.parse)
         await Client.bot.say('Currently batphoning role: ' + Client.role)
+        await Client.bot.say('Currently tracking: ' + Client.target1
+                + ', ' + Client.target2 + ', and ' + Client.target3)
 
 ###############################################################################
     async def track():
         await Client.bot.wait_until_ready()
         while not Client.bot.is_closed:
             for line in Pygtail(Client.parse):
-                if Client.target in line:
+                if Client.target1 in line or Client.target2 in line or Client.target3 in line:
                     print('Target found! Activating bat signal!')
                     await Client.bot.send_message(
                         Client.bot.get_channel(Client.channel), '!batsignal')
