@@ -19,6 +19,7 @@ from contextlib import closing
 from discord.ext import commands
 from discord.ext.commands import Bot
 from pygtail import Pygtail
+from random import *
 import asyncio
 import datetime
 import discord
@@ -70,6 +71,16 @@ class Client():
     async def on_message(message):
         await Client.bot.process_commands(message)
 
+###############################################################################
+    @bot.command(pass_context=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def roll(ctx, arg1):
+        await Client.bot.say('A random die is rolled by '
+                                + ctx.message.author.name + ' .')
+        await Client.bot.say('It could have been any number between 0 and '
+                                + arg1 + ', but this time it turned up a '
+                                        + str(randint(0, int(arg1))) + '.')
+        
 ###############################################################################
     @bot.command(pass_context=True)
     @commands.cooldown(1, 5, commands.BucketType.channel)
