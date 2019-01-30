@@ -49,10 +49,17 @@ class Client():
         return None
 
 ###############################################################################
-    def get_cfg(self, cfgvar):
+    @bot.command(pass_context=True)
+    @commands.cooldown(1, 30, commands.BucketType.channel)
+    async def batphone(ctx):
+        role = discord.utils.get(ctx.message.server.roles, name=Client.role)
+        await Client.bot.say('{} -> {}'.format(role.mention, Client.fte))
+
+###############################################################################
+    def get_cfg(self, arg):
         with closing(open('PyConnect.ini', 'r')) as file:
             buffer = file.read(None).splitlines()
-            value = buffer.pop(buffer.index(cfgvar) + 1)
+            value = buffer.pop(buffer.index(arg) + 1)
             return value
 
 ###############################################################################
@@ -60,13 +67,6 @@ class Client():
     async def on_ready():
         print('The bot is ready!')
         await Client.bot.change_presence(game=discord.Game(name='Project 1999'))
-
-###############################################################################
-    @bot.command(pass_context=True)
-    @commands.cooldown(1, 30, commands.BucketType.channel)
-    async def batphone(ctx):
-        role = discord.utils.get(ctx.message.server.roles, name=Client.role)
-        await Client.bot.say('{0}'.format(role.mention) + ' -> ' + Client.fte)
 
 ###############################################################################
     @bot.event
@@ -78,21 +78,20 @@ class Client():
     @commands.cooldown(10, 30, commands.BucketType.channel)
     async def roll(ctx, *args):
         x = 0
-        await Client.bot.say('A random die is rolled by '
-                                + ctx.message.author.name + ' .')
+        await Client.bot.say('A random die is rolled by {}.'.format(
+                ctx.message.author.name))
         for num in args:
             if num:
                 x = x + 1
         if x == 1:
             await Client.bot.say('It could have been any number between 0'
-                   + ' and ' + args[0] + ', but this time it turned up a '
-                            + str(randint(0, int(args[0]))) + '.')
+                    ' and {}, but this time it turned up a {}.'.format(
+                            args[0], str(randint(0, int(args[0])))))
         elif x == 2:
-            await Client.bot.say('It could have been any number between '
-                    + args[0] + ' and ' + args[1]
-                            + ', but this time it turned up a '
-                                    + str(randint(int(args[0]), int(args[1])))
-                                            + '.')
+            await Client.bot.say('It could have been any number between {} '
+                    'and {}, but this time it turned up a {}.'.format(
+                            args[0], args[1], str(randint(int(args[0]),
+                                    int(args[1])))))
         else:
             await Client.bot.say('Invalid number of inputs!')
 
@@ -102,39 +101,45 @@ class Client():
     async def set(ctx, arg1, arg2):
         if arg1 == 'channel':
             Client.channel = arg2
-            await Client.bot.say('Channel set to: ' + Client.channel)
+            await Client.bot.say('Channel set to: {}'.format(Client.channel))
         if arg1 == 'parse':
             Client.parse = arg2
-            await Client.bot.say('Parse file set to: ' + Client.parse)
+            await Client.bot.say('Parse file set to: {}'.format(Client.parse))
         if arg1 == 'role':
             Client.role = arg2
-            await Client.bot.say('Role to mention set to: ' + Client.role)
+            await Client.bot.say('Batphone role set to: {}'.format(Client.role))
         if arg1 == 'target1':
             Client.target1 = arg2
-            await Client.bot.say('Target1 set to: ' + Client.target1)
+            await Client.bot.say('Target1 set to: {}'.format(Client.target1))
         if arg1 == 'target2':
             Client.target2 = arg2
-            await Client.bot.say('Target2 set to: ' + Client.target2)
+            await Client.bot.say('Target2 set to: {}'.format(Client.target2))
         if arg1 == 'target3':
             Client.target3 = arg2
-            await Client.bot.say('Target3 set to: ' + Client.target3)
+            await Client.bot.say('Target3 set to: {}'.format(Client.target3))
+
+###############################################################################
+    @bot.command(pass_context=True)
+    async def shutdown(ctx):
+        await Client.bot.say('Shutting down!')
+        await Client.bot.logout()
 
 ###############################################################################
     @bot.command(pass_context=True)
     async def status(ctx):
         await Client.bot.say('(T)echnology for (P)repared (A)egis (R)aiding')
-        await Client.bot.say('Currently talking in channel: ' + Client.channel)
-        await Client.bot.say('Currently parsing file: ' + Client.parse)
-        await Client.bot.say('Currently batphoning role: ' + Client.role)
-        await Client.bot.say('Currently tracking: ' + Client.target1
-                + ', ' + Client.target2 + ', and ' + Client.target3)
+        await Client.bot.say('Talking in channel: {}'.format(Client.channel))
+        await Client.bot.say('Parsing file: {}'.format(Client.parse))
+        await Client.bot.say('Batphoning role: {}'.format(Client.role))
+        await Client.bot.say('Tracking: {}, {}, and {}'.format(
+                Client.target1, Client.target2, Client.target3))
 
 ###############################################################################
     async def track():
         await Client.bot.wait_until_ready()
         while not Client.bot.is_closed:
             for line in Pygtail(Client.parse):
-                if Client.target1 in line or Client.target2 in line or Client.target3 in line:
+                if Client.target1 or Client.target2 or Client.target3 in line:
                     print('Target found! Activating bat signal!')
                     await Client.bot.send_message(
                         Client.bot.get_channel(Client.channel), '!batsignal')
