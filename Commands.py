@@ -35,6 +35,18 @@ class Commands:
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
 
+        self.level = {}
+        self.xp = {}
+
+        self.get_next_level = {}
+        self.get_next_xp = {}
+        self.get_xp_remain = {}
+
+        self.next_level = [[2,  5],
+                           [3, 10],
+                           [4, 15],
+                           [5, 20]]
+
 ###############################################################################
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.channel)
@@ -42,6 +54,21 @@ class Commands:
         role = discord.utils.get(ctx.message.server.roles, name=self.role)
         await ctx.message.channel.send('{} -> {}'.format(role.mention,
                 self.fte))
+
+###############################################################################
+    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def charinfo(self, ctx):
+        get_next_level = self.next_level[self.level[id] - 1][0]
+        get_next_xp = self.next_level[get_next_level - 2][1]
+        get_xp_remain = get_next_xp - self.xp[id]
+        self.get_next_level[id] = get_next_level
+        self.get_next_xp[id] = get_next_xp
+        self.get_xp_remain[id] = get_xp_remain
+        await ctx.message.channel.send('Level {}.'.format(self.level[id]))
+        await ctx.message.channel.send('{} XP points.'.format(self.xp[id]))
+        await ctx.message.channel.send('You will gain a level in {} XP.'
+                .format(get_xp_remain))
 
 ###############################################################################
     def get_cfg(self, arg):
@@ -62,6 +89,18 @@ class Commands:
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
         await ctx.message.channel.send('OK!')
+
+###############################################################################
+    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def register(self, ctx):
+        if id not in self.level:
+            self.level[id] = 1
+            self.xp[id] = 0
+            await ctx.message.channel.send('User ID is now registered!')
+            await ctx.message.channel.send('Use !charinfo for character stats!')
+        else:
+            await ctx.message.channel.send('You have already registered!')
 
 ###############################################################################
     @commands.command()
