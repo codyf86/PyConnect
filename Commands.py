@@ -18,7 +18,7 @@
 from contextlib import closing
 from discord.ext import commands
 from random import *
-from PyConnect import *
+from pygtail import Pygtail
 import asyncio
 import discord
 
@@ -26,32 +26,40 @@ class Commands:
 ###############################################################################
     def __init__(self, bot):
         self.bot = bot
+        self.background_task = self.bot.loop.create_task(self.track())
 
-        Commands.channel = Client.get_cfg(None,'[CHANNEL]')
-        Commands.parse   = Client.get_cfg(None, '[PARSE]')
-        Commands.role    = Client.get_cfg(None, '[ROLE]')
-        Commands.target1  = Client.get_cfg(None, '[TARGET1]')
-        Commands.target2  = Client.get_cfg(None, '[TARGET2]')
-        Commands.target3  = Client.get_cfg(None, '[TARGET3]')
+        self.channel = self.get_cfg('[CHANNEL]')
+        self.parse   = self.get_cfg('[PARSE]')
+        self.role    = self.get_cfg('[ROLE]')
+        self.target1  = self.get_cfg('[TARGET1]')
+        self.target2  = self.get_cfg('[TARGET2]')
+        self.target3  = self.get_cfg('[TARGET3]')
 
 ###############################################################################
     @commands.command(pass_context=True)
     @commands.cooldown(1, 30, commands.BucketType.channel)
     async def batphone(self, ctx):
-        role = discord.utils.get(ctx.message.server.roles, name=Commands.role)
-        await self.bot.say('{} -> {}'.format(role.mention, Commands.fte))
+        role = discord.utils.get(ctx.message.server.roles, name=self.role)
+        await self.bot.say('{} -> {}'.format(role.mention, self.fte))
+
+###############################################################################
+    def get_cfg(self, arg):
+        with closing(open('PyConnect.ini', 'r')) as file:
+            buffer = file.read(None).splitlines()
+            value = buffer.pop(buffer.index(arg) + 1)
+            return value
 
 ###############################################################################
     @commands.command(pass_context=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def reload(self, ctx):
         await self.bot.say('Reloading config variables...')
-        Commands.channel = Client.get_cfg(None,'[CHANNEL]')
-        Commands.parse   = Client.get_cfg(None, '[PARSE]')
-        Commands.role    = Client.get_cfg(None, '[ROLE]')
-        Commands.target1  = Client.get_cfg(None, '[TARGET1]')
-        Commands.target2  = Client.get_cfg(None, '[TARGET2]')
-        Commands.target3  = Client.get_cfg(None, '[TARGET3]')
-        await Client.reload(None)
+        self.channel = self.get_cfg('[CHANNEL]')
+        self.parse   = self.get_cfg('[PARSE]')
+        self.role    = self.get_cfg('[ROLE]')
+        self.target1  = self.get_cfg('[TARGET1]')
+        self.target2  = self.get_cfg('[TARGET2]')
+        self.target3  = self.get_cfg('[TARGET3]')
         await self.bot.say('OK!')
 
 ###############################################################################
@@ -81,41 +89,79 @@ class Commands:
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def set(self, ctx, arg1, arg2):
         if arg1 == 'channel':
-            await self.bot.say('Set channel to: {}'.format(Commands.channel))
-            Commands.channel = arg2
+            await self.bot.say('Set channel to: {}'.format(self.channel))
+            self.channel = arg2
         if arg1 == 'parse':
-            await self.bot.say('Set parse file to: {}'.format(Commands.parse))
-            Commands.parse = arg2
+            await self.bot.say('Set parse file to: {}'.format(self.parse))
+            self.parse = arg2
         if arg1 == 'role':
-            await self.bot.say('Set batphone role to: {}'.format(Commands.role))
-            Commands.role = arg2
+            await self.bot.say('Set batphone role to: {}'.format(self.role))
+            self.role = arg2
         if arg1 == 'target1':
-            await self.bot.say('Set target1 to: {}'.format(Commands.target1))
-            Commands.target1 = arg2
+            await self.bot.say('Set target1 to: {}'.format(self.target1))
+            self.target1 = arg2
         if arg1 == 'target2':
-            await self.bot.say('Set target2 to: {}'.format(Commands.target2))
-            Commands.target2 = arg2
+            await self.bot.say('Set target2 to: {}'.format(self.target2))
+            self.target2 = arg2
         if arg1 == 'target3':
-            await self.bot.say('Set target3 to: {}'.format(Commands.target3))
-            Commands.target3 = arg2
-        await Client.set_var(None, arg1, arg2)
+            await self.bot.say('Set target3 to: {}'.format(self.target3))
+            self.target3 = arg2
         await self.bot.say('OK!')
 
 ###############################################################################
-    async def set_var(self, arg1, arg2):
-        if arg1 == 'fte':
-            Commands.fte = arg2
+    @commands.command(pass_context=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def shutdown(self, ctx):
+        await self.bot.say('Shutting down!')
+        await self.bot.close()
 
 ###############################################################################
     @commands.command(pass_context=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def start(self, ctx):
+        if self.background_task.done():
+            self.background_task = self.bot.loop.create_task(self.track())
+            await self.bot.send_message(ctx.message.channel,
+                    "Tracking loop started!")
+        else:
+            await self.bot.send_message(ctx.message.channel,
+                    "Tracking loop is already running!")
+
+###############################################################################
+    @commands.command(pass_context=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
     async def status(self, ctx):
         await self.bot.say('(T)echnology for (P)repared (A)egis (R)aiding')
-        await self.bot.say('Talking in channel: {}'.format(Commands.channel))
-        await self.bot.say('Parsing file: {}'.format(Commands.parse))
-        await self.bot.say('Batphoning role: {}'.format(Commands.role))
+        await self.bot.say('Parsing file: {}'.format(self.parse))
+        await self.bot.say('Batphoning role:channel_id: {}:{}'.format(
+                self.role, self.channel))
         await self.bot.say('Tracking: {}, {}, and {}'.format(
-                Commands.target1, Commands.target2, Commands.target3))
+                self.target1, self.target2, self.target3))
+        await self.bot.say('OK!')
 
+###############################################################################
+    @commands.command(pass_context=True)
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def stop(self, ctx):
+        if not self.background_task.done():
+            self.background_task.cancel()
+            await self.bot.send_message(ctx.message.channel,
+                    "Tracking loop stopped!")
+        else:
+            await self.bot.send_message(ctx.message.channel,
+                    "Tracking loop is not currently running!")
+
+###############################################################################
+    async def track(self):
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed:
+            for line in Pygtail(self.parse):
+                if self.target1 in line or self.target2 in line or self.target3 in line:
+                    print('Target found! Activating bat signal!')
+                    await self.bot.send_message(
+                        self.bot.get_channel(self.channel), '!batsignal')
+                    self.fte = line
+            await asyncio.sleep(5)
 
 ###############################################################################
 def setup(bot):
