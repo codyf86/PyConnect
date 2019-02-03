@@ -41,7 +41,8 @@ class Client:
 ###############################################################################
     async def on_ready(self):
         print('The bot is ready!')
-        await self.bot.change_presence(game=discord.Game(name='Project 1999'))
+        await self.bot.change_presence(activity=discord.Game(name=
+                'Project 1999'))
 
 ###############################################################################
     async def on_message(self, message):

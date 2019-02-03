@@ -36,11 +36,12 @@ class Commands:
         self.target3  = self.get_cfg('[TARGET3]')
 
 ###############################################################################
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.channel)
     async def batphone(self, ctx):
         role = discord.utils.get(ctx.message.server.roles, name=self.role)
-        await self.bot.say('{} -> {}'.format(role.mention, self.fte))
+        await ctx.message.channel.send('{} -> {}'.format(role.mention,
+                self.fte))
 
 ###############################################################################
     def get_cfg(self, arg):
@@ -50,116 +51,122 @@ class Commands:
             return value
 
 ###############################################################################
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def reload(self, ctx):
-        await self.bot.say('Reloading config variables...')
+        await ctx.message.channel.send('Reloading config variables...')
         self.channel = self.get_cfg('[CHANNEL]')
         self.parse   = self.get_cfg('[PARSE]')
         self.role    = self.get_cfg('[ROLE]')
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
-        await self.bot.say('OK!')
+        await ctx.message.channel.send('OK!')
 
 ###############################################################################
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(10, 30, commands.BucketType.channel)
     async def roll(self, ctx, *args):
         x = 0
-        await self.bot.say('A random die is rolled by {}.'.format(
+        await ctx.message.channel.send('A random die is rolled by {}.'.format(
                 ctx.message.author.name))
         for num in args:
             if num:
                 x = x + 1
         if x == 1:
-            await self.bot.say('It could have been any number between 0'
-                    ' and {}, but this time it turned up a {}.'.format(
-                            args[0], str(randint(0, int(args[0])))))
+            await ctx.message.channel.send('It could have been any number'
+                    'between 0 and {}, but this time it turned up a {}.'
+                            .format(args[0], str(randint(0, int(args[0])))))
         elif x == 2:
-            await self.bot.say('It could have been any number between {} '
-                    'and {}, but this time it turned up a {}.'.format(
-                            args[0], args[1], str(randint(int(args[0]),
+            await ctx.message.channel.send('It could have been any number'
+                    'between {} and {}, but this time it turned up a {}.'
+                            .format(args[0], args[1], str(randint(int(args[0]),
                                     int(args[1])))))
         else:
-            await self.bot.say('Invalid number of inputs!')
+            await ctx.message.channel.send('Invalid number of inputs!')
 
 ###############################################################################
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def set(self, ctx, arg1, arg2):
         if arg1 == 'channel':
-            await self.bot.say('Set channel to: {}'.format(self.channel))
+            await ctx.message.channel.send('Set channel to: {}'
+                    .format(self.channel))
             self.channel = arg2
         if arg1 == 'parse':
-            await self.bot.say('Set parse file to: {}'.format(self.parse))
+            await ctx.message.channel.send('Set parse file to: {}'
+                    .format(self.parse))
             self.parse = arg2
         if arg1 == 'role':
-            await self.bot.say('Set batphone role to: {}'.format(self.role))
+            await ctx.message.channel.send('Set batphone role to: {}'
+                    .format(self.role))
             self.role = arg2
         if arg1 == 'target1':
-            await self.bot.say('Set target1 to: {}'.format(self.target1))
+            await ctx.message.channel.send('Set target1 to: {}'
+                    .format(self.target1))
             self.target1 = arg2
         if arg1 == 'target2':
-            await self.bot.say('Set target2 to: {}'.format(self.target2))
+            await ctx.message.channel.send('Set target2 to: {}'
+                    .format(self.target2))
             self.target2 = arg2
         if arg1 == 'target3':
-            await self.bot.say('Set target3 to: {}'.format(self.target3))
+            await ctx.message.channel.send('Set target3 to: {}'
+                    .format(self.target3))
             self.target3 = arg2
-        await self.bot.say('OK!')
+        await ctx.message.channel.send('OK!')
 
 ###############################################################################
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def shutdown(self, ctx):
-        await self.bot.say('Shutting down!')
+        await ctx.message.channel.send('Shutting down!')
         await self.bot.close()
 
 ###############################################################################
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def start(self, ctx):
         if self.background_task.done():
             self.background_task = self.bot.loop.create_task(self.track())
-            await self.bot.send_message(ctx.message.channel,
-                    "Tracking loop started!")
+            await ctx.message.channel.send("Tracking loop started!")
         else:
-            await self.bot.send_message(ctx.message.channel,
-                    "Tracking loop is already running!")
+            await ctx.message.channel.send("Tracking loop is already running!")
 
 ###############################################################################
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def status(self, ctx):
-        await self.bot.say('(T)echnology for (P)repared (A)egis (R)aiding')
-        await self.bot.say('Parsing file: {}'.format(self.parse))
-        await self.bot.say('Batphoning role:channel_id: {}:{}'.format(
-                self.role, self.channel))
-        await self.bot.say('Tracking: {}, {}, and {}'.format(
-                self.target1, self.target2, self.target3))
-        await self.bot.say('OK!')
+        await ctx.message.channel.send('(T)echnology for (P)repared (A)egis'
+                ' (R)aiding')
+        await ctx.message.channel.send('Parsing file: {}'.format(self.parse))
+        await ctx.message.channel.send('Batphoning role:channel_id: {}:{}'
+                .format(self.role, self.channel))
+        await ctx.message.channel.send('Tracking: {}, {}, and {}'
+                .format(self.target1, self.target2, self.target3))
+        await ctx.message.channel.send('OK!')
 
 ###############################################################################
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def stop(self, ctx):
         if not self.background_task.done():
             self.background_task.cancel()
-            await self.bot.send_message(ctx.message.channel,
-                    "Tracking loop stopped!")
+            await ctx.message.channel.send('Tracking loop stopped!')
         else:
-            await self.bot.send_message(ctx.message.channel,
-                    "Tracking loop is not currently running!")
+            await ctx.message.channel.send('Tracking loop is not currently'
+                    ' running!')
 
 ###############################################################################
     async def track(self):
         await self.bot.wait_until_ready()
-        while not self.bot.is_closed:
+        while not self.bot.is_closed():
+            channel = self.bot.get_channel(int(self.channel))
             for line in Pygtail(self.parse):
-                if self.target1 in line or self.target2 in line or self.target3 in line:
+                target_list = [self.target1 in line, self.target2 in line,
+                        self.target3 in line]
+                if any(target_list):
                     print('Target found! Activating bat signal!')
-                    await self.bot.send_message(
-                        self.bot.get_channel(self.channel), '!batsignal')
+                    await channel.send('!batsignal')
                     self.fte = line
             await asyncio.sleep(5)
 
