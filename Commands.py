@@ -34,18 +34,48 @@ class Commands:
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
-
         self.level = {}
         self.xp = {}
-
         self.get_next_level = {}
         self.get_next_xp = {}
         self.get_xp_remain = {}
-
         self.next_level = [[2,  5],
                            [3, 10],
                            [4, 15],
                            [5, 20]]
+
+###############################################################################
+    @commands.command()
+    @commands.cooldown(1, 2, commands.BucketType.channel)
+    async def attack(self, ctx):
+        get_next_level = self.next_level[
+                self.level[ctx.message.author.id] -1 ][0]
+        get_next_xp = self.next_level[get_next_level - 2][1]
+        get_xp_remain = get_next_xp - self.xp[ctx.message.author.id]
+        number = randint(0, 100)
+        if (number >= 40):
+            await ctx.message.channel.send('You have defeated the monster!')
+            if (get_xp_remain >= 1):
+                get_xp_remain = get_xp_remain - 1
+                self.xp[ctx.message.author.id] = self.xp[
+                        ctx.message.author.id] + 1
+                await ctx.message.channel.send('You gain 1 XP!')
+                if (get_xp_remain == 0):
+                    self.level[ctx.message.author.id] = self.level[
+                            ctx.message.author.id] + 1
+                    await ctx.message.channel.send('You have gained a level!')
+                    await ctx.message.channel.send('Welcome to level {}!'
+                            .format(self.level[ctx.message.author.id]))
+        elif (number >= 20) and (number <= 39):
+            await ctx.message.channel.send('You poop your pants and flee!')
+        else:
+            await ctx.message.channel.send('You die bravely in battle!')
+            if (get_xp_remain < 5):
+                await ctx.message.channel.send('You lose 1 XP!')
+                self.xp[ctx.message.author.id] = self.xp[
+                        ctx.message.author.id] - 1
+            else:
+                await ctx.message.channel.send('You lose 0 XP!')
 
 ###############################################################################
     @commands.command()
@@ -59,14 +89,17 @@ class Commands:
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def charinfo(self, ctx):
-        get_next_level = self.next_level[self.level[id] - 1][0]
+        get_next_level = self.next_level[
+                self.level[ctx.message.author.id] -1 ][0]
         get_next_xp = self.next_level[get_next_level - 2][1]
-        get_xp_remain = get_next_xp - self.xp[id]
-        self.get_next_level[id] = get_next_level
-        self.get_next_xp[id] = get_next_xp
-        self.get_xp_remain[id] = get_xp_remain
-        await ctx.message.channel.send('Level {}.'.format(self.level[id]))
-        await ctx.message.channel.send('{} XP points.'.format(self.xp[id]))
+        get_xp_remain = get_next_xp - self.xp[ctx.message.author.id]
+        self.get_next_level[ctx.message.author.id] = get_next_level
+        self.get_next_xp[ctx.message.author.id] = get_next_xp
+        self.get_xp_remain[ctx.message.author.id] = get_xp_remain
+        await ctx.message.channel.send('Level {}.'
+                .format(self.level[ctx.message.author.id]))
+        await ctx.message.channel.send('{} XP.'
+                .format(self.xp[ctx.message.author.id]))
         await ctx.message.channel.send('You will gain a level in {} XP.'
                 .format(get_xp_remain))
 
@@ -94,13 +127,10 @@ class Commands:
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def register(self, ctx):
-        if id not in self.level:
-            self.level[id] = 1
-            self.xp[id] = 0
-            await ctx.message.channel.send('User ID is now registered!')
-            await ctx.message.channel.send('Use !charinfo for character stats!')
-        else:
-            await ctx.message.channel.send('You have already registered!')
+        self.level[ctx.message.author.id] = 1
+        self.xp[ctx.message.author.id] = 0
+        await ctx.message.channel.send('User ID is now registered!')
+        await ctx.message.channel.send('Use !charinfo for character stats!')
 
 ###############################################################################
     @commands.command()
