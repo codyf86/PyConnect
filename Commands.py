@@ -34,6 +34,7 @@ class Commands:
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
+        self.fte = ''
         self.level = {}
         self.xp = {}
         self.get_next_level = {}
@@ -95,14 +96,6 @@ class Commands:
                         ctx.message.author.id] - 1
             else:
                 await ctx.message.channel.send('You lose 0 XP!')
-
-###############################################################################
-    @commands.command()
-    @commands.cooldown(1, 30, commands.BucketType.channel)
-    async def batphone(self, ctx):
-        role = discord.utils.get(ctx.message.server.roles, name=self.role)
-        await ctx.message.channel.send('{} -> {}'.format(role.mention,
-                self.fte))
 
 ###############################################################################
     @commands.command()
@@ -253,9 +246,10 @@ class Commands:
                 target_list = [self.target1 in line, self.target2 in line,
                         self.target3 in line]
                 if any(target_list):
-                    print('Target found! Activating bat signal!')
-                    await channel.send('!batsignal')
                     self.fte = line
+                    print('Target found! Activating bat signal!')
+                    await channel.send('<@&{}> -> {}'
+                            .format(self.role, self.fte))
             await asyncio.sleep(5)
 
 ###############################################################################
