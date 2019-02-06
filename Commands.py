@@ -171,29 +171,29 @@ class Commands:
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def set(self, ctx, arg1, arg2):
         if arg1 == 'channel':
+            self.channel = arg2
             await ctx.message.channel.send('Set channel to: {}'
                     .format(self.channel))
-            self.channel = arg2
         if arg1 == 'parse':
+            self.parse = arg2
             await ctx.message.channel.send('Set parse file to: {}'
                     .format(self.parse))
-            self.parse = arg2
         if arg1 == 'role':
+            self.role = arg2
             await ctx.message.channel.send('Set batphone role to: {}'
                     .format(self.role))
-            self.role = arg2
         if arg1 == 'target1':
+            self.target1 = arg2
             await ctx.message.channel.send('Set target1 to: {}'
                     .format(self.target1))
-            self.target1 = arg2
         if arg1 == 'target2':
+            self.target2 = arg2
             await ctx.message.channel.send('Set target2 to: {}'
                     .format(self.target2))
-            self.target2 = arg2
         if arg1 == 'target3':
+            self.target3 = arg2
             await ctx.message.channel.send('Set target3 to: {}'
                     .format(self.target3))
-            self.target3 = arg2
         await ctx.message.channel.send('OK!')
 
 ###############################################################################
