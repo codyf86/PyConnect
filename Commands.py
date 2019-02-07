@@ -68,32 +68,29 @@ class Commands:
     @commands.command()
     @commands.cooldown(1, 2, commands.BucketType.channel)
     async def attack(self, ctx):
-        get_next_level = self.next_level[
-                self.level[ctx.message.author.id] -1 ][0]
+        author_id = ctx.message.author.id
+        get_next_level = self.next_level[self.level[author_id] -1 ][0]
         get_next_xp = self.next_level[get_next_level - 2][1]
-        get_xp_remain = get_next_xp - self.xp[ctx.message.author.id]
+        get_xp_remain = get_next_xp - self.xp[author_id]
         number = randint(0, 100)
         if (number >= 40):
             await ctx.send('You have defeated the monster!')
             if (get_xp_remain >= 1):
                 get_xp_remain = get_xp_remain - 1
-                self.xp[ctx.message.author.id] = self.xp[
-                        ctx.message.author.id] + 1
+                self.xp[author_id] = self.xp[author_id] + 1
                 await ctx.send('You gain 1 XP!')
                 if (get_xp_remain == 0):
-                    self.level[ctx.message.author.id] = self.level[
-                            ctx.message.author.id] + 1
+                    self.level[author_id] = self.level[author_id] + 1
                     await ctx.send('You have gained a level!')
                     await ctx.send('Welcome to level {}!'
-                            .format(self.level[ctx.message.author.id]))
+                            .format(self.level[author_id]))
         elif (number >= 20) and (number <= 39):
             await ctx.send('You poop your pants and flee!')
         else:
             await ctx.send('You die bravely in battle!')
             if (get_xp_remain < 5):
                 await ctx.send('You lose 1 XP!')
-                self.xp[ctx.message.author.id] = self.xp[
-                        ctx.message.author.id] - 1
+                self.xp[author_id] = self.xp[author_id] - 1
             else:
                 await ctx.send('You lose 0 XP!')
 
@@ -101,19 +98,16 @@ class Commands:
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def charinfo(self, ctx):
-        get_next_level = self.next_level[
-                self.level[ctx.message.author.id] -1 ][0]
+        author_id = ctx.message.author.id
+        get_next_level = self.next_level[self.level[author_id] -1 ][0]
         get_next_xp = self.next_level[get_next_level - 2][1]
-        get_xp_remain = get_next_xp - self.xp[ctx.message.author.id]
-        self.get_next_level[ctx.message.author.id] = get_next_level
-        self.get_next_xp[ctx.message.author.id] = get_next_xp
-        self.get_xp_remain[ctx.message.author.id] = get_xp_remain
-        await ctx.send('Level {}.'
-                .format(self.level[ctx.message.author.id]))
-        await ctx.send('{} XP.'
-                .format(self.xp[ctx.message.author.id]))
-        await ctx.send('You will gain a level in {} XP.'
-                .format(get_xp_remain))
+        get_xp_remain = get_next_xp - self.xp[author_id]
+        self.get_next_level[author_id] = get_next_level
+        self.get_next_xp[author_id] = get_next_xp
+        self.get_xp_remain[author_id] = get_xp_remain
+        await ctx.send('Level {}.'.format(self.level[author_id]))
+        await ctx.send('{} XP.'.format(self.xp[author_id]))
+        await ctx.send('You will gain a level in {} XP.'.format(get_xp_remain))
 
 ###############################################################################
     def get_cfg(self, arg):
@@ -139,8 +133,9 @@ class Commands:
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def register(self, ctx):
-        self.level[ctx.message.author.id] = 1
-        self.xp[ctx.message.author.id] = 0
+        author_id = ctx.message.author.id
+        self.level[author_id] = 1
+        self.xp[author_id] = 0
         await ctx.send('User ID is now registered!')
         await ctx.send('Use !charinfo for character stats!')
 
