@@ -17,8 +17,9 @@
 ###############################################################################
 from contextlib import closing
 from discord.ext import commands
-from random import *
+from mutagen.mp3 import MP3
 from pygtail import Pygtail
+from random import *
 import asyncio
 import discord
 
@@ -26,14 +27,15 @@ class Commands:
 ###############################################################################
     def __init__(self, bot):
         self.bot = bot
-        self.background_task = self.bot.loop.create_task(self.track())
-
+        self.tracking_task = self.bot.loop.create_task(self.track())
+        self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
         self.parse   = self.get_cfg('[PARSE]')
         self.role    = self.get_cfg('[ROLE]')
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
+        self.voice = self.get_cfg('[VOICE]')
         self.fte = ''
         self.level = {}
         self.xp = {}
@@ -93,6 +95,17 @@ class Commands:
                 self.xp[author_id] = self.xp[author_id] - 1
             else:
                 await ctx.send('You lose 0 XP!')
+
+###############################################################################
+    @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.channel)
+    async def batphone(self, ctx):
+        mp3 = MP3(self.audio_file)
+        voice = self.bot.get_channel(int(self.voice))
+        player = await voice.connect()
+        player.play(discord.FFmpegPCMAudio(self.audio_file))
+        await asyncio.sleep(mp3.info.length + 1)
+        await player.disconnect()
 
 ###############################################################################
     @commands.command()
@@ -196,8 +209,8 @@ class Commands:
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def start(self, ctx):
-        if self.background_task.done():
-            self.background_task = self.bot.loop.create_task(self.track())
+        if self.tracking_task.done():
+            self.tracking_task = self.bot.loop.create_task(self.track())
             await ctx.send("Tracking loop started!")
         else:
             await ctx.send("Tracking loop is already running!")
@@ -218,8 +231,8 @@ class Commands:
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def stop(self, ctx):
-        if not self.background_task.done():
-            self.background_task.cancel()
+        if not self.tracking_task.done():
+            self.tracking_task.cancel()
             await ctx.send('Tracking loop stopped!')
         else:
             await ctx.send('Tracking loop is not currently running!')
@@ -237,6 +250,7 @@ class Commands:
                     print('Target found! Activating bat signal!')
                     await channel.send('<@&{}> -> {}'
                             .format(self.role, self.fte))
+                    await self.batphone(None)
             await asyncio.sleep(5)
 
 ###############################################################################
