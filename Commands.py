@@ -74,28 +74,28 @@ class Commands:
         get_xp_remain = get_next_xp - self.xp[ctx.message.author.id]
         number = randint(0, 100)
         if (number >= 40):
-            await ctx.message.channel.send('You have defeated the monster!')
+            await ctx.send('You have defeated the monster!')
             if (get_xp_remain >= 1):
                 get_xp_remain = get_xp_remain - 1
                 self.xp[ctx.message.author.id] = self.xp[
                         ctx.message.author.id] + 1
-                await ctx.message.channel.send('You gain 1 XP!')
+                await ctx.send('You gain 1 XP!')
                 if (get_xp_remain == 0):
                     self.level[ctx.message.author.id] = self.level[
                             ctx.message.author.id] + 1
-                    await ctx.message.channel.send('You have gained a level!')
-                    await ctx.message.channel.send('Welcome to level {}!'
+                    await ctx.send('You have gained a level!')
+                    await ctx.send('Welcome to level {}!'
                             .format(self.level[ctx.message.author.id]))
         elif (number >= 20) and (number <= 39):
-            await ctx.message.channel.send('You poop your pants and flee!')
+            await ctx.send('You poop your pants and flee!')
         else:
-            await ctx.message.channel.send('You die bravely in battle!')
+            await ctx.send('You die bravely in battle!')
             if (get_xp_remain < 5):
-                await ctx.message.channel.send('You lose 1 XP!')
+                await ctx.send('You lose 1 XP!')
                 self.xp[ctx.message.author.id] = self.xp[
                         ctx.message.author.id] - 1
             else:
-                await ctx.message.channel.send('You lose 0 XP!')
+                await ctx.send('You lose 0 XP!')
 
 ###############################################################################
     @commands.command()
@@ -108,11 +108,11 @@ class Commands:
         self.get_next_level[ctx.message.author.id] = get_next_level
         self.get_next_xp[ctx.message.author.id] = get_next_xp
         self.get_xp_remain[ctx.message.author.id] = get_xp_remain
-        await ctx.message.channel.send('Level {}.'
+        await ctx.send('Level {}.'
                 .format(self.level[ctx.message.author.id]))
-        await ctx.message.channel.send('{} XP.'
+        await ctx.send('{} XP.'
                 .format(self.xp[ctx.message.author.id]))
-        await ctx.message.channel.send('You will gain a level in {} XP.'
+        await ctx.send('You will gain a level in {} XP.'
                 .format(get_xp_remain))
 
 ###############################################################################
@@ -126,14 +126,14 @@ class Commands:
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def reload(self, ctx):
-        await ctx.message.channel.send('Reloading config variables...')
+        await ctx.send('Reloading config variables...')
         self.channel = self.get_cfg('[CHANNEL]')
         self.parse   = self.get_cfg('[PARSE]')
         self.role    = self.get_cfg('[ROLE]')
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
-        await ctx.message.channel.send('OK!')
+        await ctx.send('OK!')
 
 ###############################################################################
     @commands.command()
@@ -141,30 +141,30 @@ class Commands:
     async def register(self, ctx):
         self.level[ctx.message.author.id] = 1
         self.xp[ctx.message.author.id] = 0
-        await ctx.message.channel.send('User ID is now registered!')
-        await ctx.message.channel.send('Use !charinfo for character stats!')
+        await ctx.send('User ID is now registered!')
+        await ctx.send('Use !charinfo for character stats!')
 
 ###############################################################################
     @commands.command()
     @commands.cooldown(10, 30, commands.BucketType.channel)
     async def roll(self, ctx, *args):
         x = 0
-        await ctx.message.channel.send('A random die is rolled by {}.'.format(
+        await ctx.send('A random die is rolled by {}.'.format(
                 ctx.message.author.name))
         for num in args:
             if num:
                 x = x + 1
         if x == 1:
-            await ctx.message.channel.send('It could have been any number'
+            await ctx.send('It could have been any number'
                     'between 0 and {}, but this time it turned up a {}.'
                             .format(args[0], str(randint(0, int(args[0])))))
         elif x == 2:
-            await ctx.message.channel.send('It could have been any number'
+            await ctx.send('It could have been any number'
                     'between {} and {}, but this time it turned up a {}.'
                             .format(args[0], args[1], str(randint(int(args[0]),
                                     int(args[1])))))
         else:
-            await ctx.message.channel.send('Invalid number of inputs!')
+            await ctx.send('Invalid number of inputs!')
 
 ###############################################################################
     @commands.command()
@@ -172,35 +172,29 @@ class Commands:
     async def set(self, ctx, arg1, arg2):
         if arg1 == 'channel':
             self.channel = arg2
-            await ctx.message.channel.send('Set channel to: {}'
-                    .format(self.channel))
+            await ctx.send('Set channel to: {}'.format(self.channel))
         if arg1 == 'parse':
             self.parse = arg2
-            await ctx.message.channel.send('Set parse file to: {}'
-                    .format(self.parse))
+            await ctx.send('Set parse file to: {}'.format(self.parse))
         if arg1 == 'role':
             self.role = arg2
-            await ctx.message.channel.send('Set batphone role to: {}'
-                    .format(self.role))
+            await ctx.send('Set batphone role to: {}'.format(self.role))
         if arg1 == 'target1':
             self.target1 = arg2
-            await ctx.message.channel.send('Set target1 to: {}'
-                    .format(self.target1))
+            await ctx.send('Set target1 to: {}'.format(self.target1))
         if arg1 == 'target2':
             self.target2 = arg2
-            await ctx.message.channel.send('Set target2 to: {}'
-                    .format(self.target2))
+            await ctx.send('Set target2 to: {}'.format(self.target2))
         if arg1 == 'target3':
             self.target3 = arg2
-            await ctx.message.channel.send('Set target3 to: {}'
-                    .format(self.target3))
-        await ctx.message.channel.send('OK!')
+            await ctx.send('Set target3 to: {}'.format(self.target3))
+        await ctx.send('OK!')
 
 ###############################################################################
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def shutdown(self, ctx):
-        await ctx.message.channel.send('Shutting down!')
+        await ctx.send('Shutting down!')
         await self.bot.close()
 
 ###############################################################################
@@ -209,22 +203,21 @@ class Commands:
     async def start(self, ctx):
         if self.background_task.done():
             self.background_task = self.bot.loop.create_task(self.track())
-            await ctx.message.channel.send("Tracking loop started!")
+            await ctx.send("Tracking loop started!")
         else:
-            await ctx.message.channel.send("Tracking loop is already running!")
+            await ctx.send("Tracking loop is already running!")
 
 ###############################################################################
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def status(self, ctx):
-        await ctx.message.channel.send('(T)echnology for (P)repared (A)egis'
-                ' (R)aiding')
-        await ctx.message.channel.send('Parsing file: {}'.format(self.parse))
-        await ctx.message.channel.send('Batphoning role:channel_id: {}:{}'
+        await ctx.send('(T)echnology for (P)repared (A)egis (R)aiding')
+        await ctx.send('Parsing file: {}'.format(self.parse))
+        await ctx.send('Batphoning role:channel_id: {}:{}'
                 .format(self.role, self.channel))
-        await ctx.message.channel.send('Tracking: {}, {}, and {}'
+        await ctx.send('Tracking: {}, {}, and {}'
                 .format(self.target1, self.target2, self.target3))
-        await ctx.message.channel.send('OK!')
+        await ctx.send('OK!')
 
 ###############################################################################
     @commands.command()
@@ -232,10 +225,9 @@ class Commands:
     async def stop(self, ctx):
         if not self.background_task.done():
             self.background_task.cancel()
-            await ctx.message.channel.send('Tracking loop stopped!')
+            await ctx.send('Tracking loop stopped!')
         else:
-            await ctx.message.channel.send('Tracking loop is not currently'
-                    ' running!')
+            await ctx.send('Tracking loop is not currently running!')
 
 ###############################################################################
     async def track(self):
