@@ -28,6 +28,7 @@ class Commands:
     def __init__(self, bot):
         self.bot = bot
         self.tracking_task = self.bot.loop.create_task(self.track())
+        self.tracking_task.cancel()
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
         self.parse   = self.get_cfg('[PARSE]')
@@ -35,6 +36,8 @@ class Commands:
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
+        self.target4  = self.get_cfg('[TARGET4]')
+        self.target5  = self.get_cfg('[TARGET5]')
         self.voice = self.get_cfg('[VOICE]')
         self.fte = ''
         self.level = {}
@@ -134,12 +137,15 @@ class Commands:
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def reload(self, ctx):
         await ctx.send('Reloading config variables...')
+        self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
         self.parse   = self.get_cfg('[PARSE]')
         self.role    = self.get_cfg('[ROLE]')
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
+        self.target2  = self.get_cfg('[TARGET4]')
+        self.target3  = self.get_cfg('[TARGET5]')
         await ctx.send('OK!')
 
 ###############################################################################
@@ -178,6 +184,9 @@ class Commands:
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def set(self, ctx, arg1, arg2):
+        if arg1 == 'audio_file':
+            self.channel = arg2
+            await ctx.send('Set audio file to: {}'.format(self.audio_file))
         if arg1 == 'channel':
             self.channel = arg2
             await ctx.send('Set channel to: {}'.format(self.channel))
@@ -196,6 +205,12 @@ class Commands:
         if arg1 == 'target3':
             self.target3 = arg2
             await ctx.send('Set target3 to: {}'.format(self.target3))
+        if arg1 == 'target4':
+            self.target4 = arg2
+            await ctx.send('Set target4 to: {}'.format(self.target4))
+        if arg1 == 'target5':
+            self.target5 = arg2
+            await ctx.send('Set target5 to: {}'.format(self.target5))
         await ctx.send('OK!')
 
 ###############################################################################
@@ -221,10 +236,12 @@ class Commands:
     async def status(self, ctx):
         await ctx.send('(T)echnology for (P)repared (A)egis (R)aiding')
         await ctx.send('Parsing file: {}'.format(self.parse))
-        await ctx.send('Batphoning role:channel_id: {}:{}'
-                .format(self.role, self.channel))
-        await ctx.send('Tracking: {}, {}, and {}'
-                .format(self.target1, self.target2, self.target3))
+        await ctx.send('Playing audio file: {}'.format(self.audio_file))
+        await ctx.send('Batphoning role_id:channel_id::voice_id: {}:{}:{}.'
+                .format(self.role, self.channel, self.voice))
+        await ctx.send('Tracking: {}, {}, {}, {}, and {}'
+                .format(self.target1, self.target2, self.target3,
+                        self.target4, self.target5))
         await ctx.send('OK!')
 
 ###############################################################################
@@ -244,13 +261,13 @@ class Commands:
             channel = self.bot.get_channel(int(self.channel))
             for line in Pygtail(self.parse):
                 target_list = [self.target1 in line, self.target2 in line,
-                        self.target3 in line]
+                        self.target3 in line, self.target4 in line,
+                                self.target5 in line]
                 if any(target_list):
                     self.fte = line
                     print('Target found! Activating bat signal!')
                     await channel.send('<@&{}> -> {}'
                             .format(self.role, self.fte))
-                    await self.batphone(None)
             await asyncio.sleep(5)
 
 ###############################################################################
