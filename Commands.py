@@ -31,6 +31,7 @@ class Commands:
         self.tracking_task.cancel()
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
+        self.count_limit = self.get_cfg('[COUNT_LIMIT]')
         self.parse   = self.get_cfg('[PARSE]')
         self.role    = self.get_cfg('[ROLE]')
         self.target1  = self.get_cfg('[TARGET1]')
@@ -39,6 +40,7 @@ class Commands:
         self.target4  = self.get_cfg('[TARGET4]')
         self.target5  = self.get_cfg('[TARGET5]')
         self.voice = self.get_cfg('[VOICE]')
+        self.count = 0
         self.fte = ''
         self.level = {}
         self.xp = {}
@@ -139,6 +141,7 @@ class Commands:
         await ctx.send('Reloading config variables...')
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
+        self.count_limit = self.get_cfg('[COUNT_LIMIT]')
         self.parse   = self.get_cfg('[PARSE]')
         self.role    = self.get_cfg('[ROLE]')
         self.target1  = self.get_cfg('[TARGET1]')
@@ -190,6 +193,9 @@ class Commands:
         if arg1 == 'channel':
             self.channel = arg2
             await ctx.send('Set channel to: {}'.format(self.channel))
+        if arg1 == 'count':
+            self.count = arg2
+            await ctx.send('Batphone count set to: {}'.format(self.count))
         if arg1 == 'parse':
             self.parse = arg2
             await ctx.send('Set parse file to: {}'.format(self.parse))
@@ -259,15 +265,23 @@ class Commands:
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             channel = self.bot.get_channel(int(self.channel))
+            voice = self.bot.get_channel(int(self.voice))
             for line in Pygtail(self.parse):
                 target_list = [self.target1 in line, self.target2 in line,
                         self.target3 in line, self.target4 in line,
                                 self.target5 in line]
                 if any(target_list):
+                    self.count = self.count + 1
                     self.fte = line
-                    print('Target found! Activating bat signal!')
-                    await channel.send('<@&{}> -> {}'
-                            .format(self.role, self.fte))
+                    if (self.count <= int(self.count_limit)): 
+                        print('Target found! Activating bat signal!')
+                        await channel.send('<@&{}> -> {}'
+                                .format(self.role, self.fte))
+                        mp3 = MP3(self.audio_file)
+                        player = await voice.connect()
+                        player.play(discord.FFmpegPCMAudio(self.audio_file))
+                        await asyncio.sleep(mp3.info.length + 1)
+                        await player.disconnect()
             await asyncio.sleep(5)
 
 ###############################################################################
