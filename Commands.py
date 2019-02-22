@@ -72,9 +72,10 @@ class Commands:
                            [25, 115]]
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="attack", description="Attack a monster.")
     @commands.cooldown(1, 2, commands.BucketType.channel)
     async def attack(self, ctx):
+        "Attack a monster."
         author_id = ctx.message.author.id
         get_next_level = self.next_level[self.level[author_id] -1 ][0]
         get_next_xp = self.next_level[get_next_level - 2][1]
@@ -102,9 +103,10 @@ class Commands:
                 await ctx.send('You lose 0 XP!')
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="batphone", description="Trigger voice batphone.")
     @commands.cooldown(1, 30, commands.BucketType.channel)
     async def batphone(self, ctx):
+        "Trigger voice batphone."
         mp3 = MP3(self.audio_file)
         voice = self.bot.get_channel(int(self.voice))
         player = await voice.connect()
@@ -113,9 +115,10 @@ class Commands:
         await player.disconnect()
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="charinfo", description="Display character info.")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def charinfo(self, ctx):
+        "Display character info."
         author_id = ctx.message.author.id
         get_next_level = self.next_level[self.level[author_id] -1 ][0]
         get_next_xp = self.next_level[get_next_level - 2][1]
@@ -135,9 +138,10 @@ class Commands:
             return value
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="reload", description="Reload config variables.")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def reload(self, ctx):
+        "Reload config variables."
         await ctx.send('Reloading config variables...')
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
@@ -152,9 +156,11 @@ class Commands:
         await ctx.send('OK!')
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="register",
+            description="Register account for rpgbot.")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def register(self, ctx):
+        "Register account for rpgbot."
         author_id = ctx.message.author.id
         self.level[author_id] = 1
         self.xp[author_id] = 0
@@ -162,9 +168,10 @@ class Commands:
         await ctx.send('Use !charinfo for character stats!')
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="roll", description="Roll magical dice.")
     @commands.cooldown(10, 30, commands.BucketType.channel)
     async def roll(self, ctx, *args):
+        "Roll magical dice."
         x = 0
         await ctx.send('A random die is rolled by {}.'.format(
                 ctx.message.author.name))
@@ -184,9 +191,10 @@ class Commands:
             await ctx.send('Invalid number of inputs!')
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="set", description="Set config variable.")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def set(self, ctx, arg1, arg2):
+        "Set config variable."
         if arg1 == 'audio_file':
             self.channel = arg2
             await ctx.send('Set audio file to: {}'.format(self.audio_file))
@@ -220,16 +228,18 @@ class Commands:
         await ctx.send('OK!')
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="shutdown", description="Shutdown bot.")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def shutdown(self, ctx):
+        "Shutdown bot."
         await ctx.send('Shutting down!')
         await self.bot.close()
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="start", description="Start tracking loop.")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def start(self, ctx):
+        "Start tracking loop."
         if self.tracking_task.done():
             self.tracking_task = self.bot.loop.create_task(self.track())
             await ctx.send("Tracking loop started!")
@@ -237,9 +247,10 @@ class Commands:
             await ctx.send("Tracking loop is already running!")
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="status", description="Display bot status.")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def status(self, ctx):
+        "Display bot status."
         await ctx.send('(T)echnology for (P)repared (A)egis (R)aiding')
         await ctx.send('Parsing file: {}'.format(self.parse))
         await ctx.send('Playing audio file: {}'.format(self.audio_file))
@@ -251,9 +262,10 @@ class Commands:
         await ctx.send('OK!')
 
 ###############################################################################
-    @commands.command()
+    @commands.command(name="stop", description="Stop tracking loop.")
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def stop(self, ctx):
+        "Stop tracking loop."
         if not self.tracking_task.done():
             self.tracking_task.cancel()
             await ctx.send('Tracking loop stopped!')
