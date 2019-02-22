@@ -15,7 +15,7 @@
 
 #!    Copyright Cody Ferber, 2019.
 ###############################################################################
-from Commands import *
+from Trackingbot import *
 from contextlib import closing
 from discord.ext import commands
 import asyncio
@@ -36,7 +36,8 @@ class Client:
         self.bot = commands.Bot(command_prefix='!')
         self.on_ready = self.bot.event(self.on_ready)
         self.on_message = self.bot.event(self.on_message)
-        self.bot.load_extension('Commands')
+        self.bot.load_extension('Rpgbot')
+        self.bot.load_extension('Trackingbot')
 
 ###############################################################################
     async def on_ready(self):
@@ -51,7 +52,7 @@ class Client:
 ###############################################################################
 def main():
     with Client() as client:
-        client.bot.run(Commands.get_cfg(None, '[TOKEN]'))
+        client.bot.run(Trackingbot.get_cfg(None, '[TOKEN]'))
 
 if __name__ == "__main__":
     main()
