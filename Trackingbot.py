@@ -77,6 +77,7 @@ class Trackingbot:
         self.target3  = self.get_cfg('[TARGET3]')
         self.target2  = self.get_cfg('[TARGET4]')
         self.target3  = self.get_cfg('[TARGET5]')
+        self.voice = self.get_cfg('[VOICE]')
         await ctx.send('OK!')
 
 ###############################################################################
@@ -143,8 +144,8 @@ class Trackingbot:
         await ctx.send('(T)echnology for (P)repared (A)egis (R)aiding')
         await ctx.send('Parsing file: {}'.format(self.parse))
         await ctx.send('Playing audio file: {}'.format(self.audio_file))
-        await ctx.send('Batphoning role_id:channel_id::voice_id: {}:{}:{}.'
-                .format(self.role, self.channel, self.voice))
+        await ctx.send('Batphoning channel_id:role_id:voice_id: {}:{}:{}.'
+                .format(self.channel, self.role, self.voice))
         await ctx.send('Trackingbot: {}, {}, {}, {}, and {}'
                 .format(self.target1, self.target2, self.target3,
                         self.target4, self.target5))
