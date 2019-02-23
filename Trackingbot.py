@@ -172,7 +172,7 @@ class Trackingbot:
                         self.target3 in line, self.target4 in line,
                                 self.target5 in line]
                 if any(target_list):
-                    self.count = self.count + 1
+                    self.count += 1
                     self.fte = line
                     if (self.count <= int(self.count_limit)): 
                         print('Target found! Activating bat signal!')

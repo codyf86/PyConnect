@@ -59,7 +59,7 @@ class Rpgbot:
     @commands.cooldown(1, 2, commands.BucketType.channel)
     async def attack(self, ctx):
         author_id = ctx.message.author.id
-        get_next_level = self.next_level[self.level[author_id] -1 ][0]
+        get_next_level = self.next_level[self.level[author_id] - 1][0]
         get_next_xp = self.next_level[get_next_level - 2][1]
         get_xp_remain = get_next_xp - self.xp[author_id]
         number = randint(0, 100)
@@ -121,7 +121,7 @@ class Rpgbot:
                 ctx.message.author.name))
         for num in args:
             if num:
-                x = x + 1
+                x += 1
         if x == 1:
             await ctx.send('It could have been any number'
                     'between 0 and {}, but this time it turned up a {}.'
