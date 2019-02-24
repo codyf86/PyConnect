@@ -74,8 +74,8 @@ class Trackingbot:
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
-        self.target2  = self.get_cfg('[TARGET4]')
-        self.target3  = self.get_cfg('[TARGET5]')
+        self.target4  = self.get_cfg('[TARGET4]')
+        self.target5  = self.get_cfg('[TARGET5]')
         self.voice = self.get_cfg('[VOICE]')
         await ctx.send('OK!')
 
@@ -89,16 +89,20 @@ class Trackingbot:
             await ctx.send('Set audio file to: {}'.format(self.audio_file))
         if arg1 == 'channel':
             self.channel = arg2
-            await ctx.send('Set channel to: {}'.format(self.channel))
+            await ctx.send('Set channel ID to: {}'.format(self.channel))
         if arg1 == 'count':
             self.count = arg2
             await ctx.send('Batphone count set to: {}'.format(self.count))
+        if arg1 == 'count_limit':
+            self.count_limit = arg2
+            await ctx.send('Batphone count limit set to: {}'
+                    .format(self.count_limit))
         if arg1 == 'parse':
             self.parse = arg2
             await ctx.send('Set parse file to: {}'.format(self.parse))
         if arg1 == 'role':
             self.role = arg2
-            await ctx.send('Set batphone role to: {}'.format(self.role))
+            await ctx.send('Set role ID to: {}'.format(self.role))
         if arg1 == 'target1':
             self.target1 = arg2
             await ctx.send('Set target1 to: {}'.format(self.target1))
@@ -114,6 +118,9 @@ class Trackingbot:
         if arg1 == 'target5':
             self.target5 = arg2
             await ctx.send('Set target5 to: {}'.format(self.target5))
+        if arg1 == 'voice':
+            self.voice = arg2
+            await ctx.send('Set voice ID to: {}'.format(self.voice))
         await ctx.send('OK!')
 
 ###############################################################################
