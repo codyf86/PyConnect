@@ -80,7 +80,7 @@ class Rpgbot:
             await ctx.send('You die bravely in battle!')
             if (get_xp_remain < 5):
                 await ctx.send('You lose 1 XP!')
-                self.xp[author_id] = self.xp[author_id] - 1
+                self.xp[author_id] -= 1
             else:
                 await ctx.send('You lose 0 XP!')
 
@@ -90,7 +90,7 @@ class Rpgbot:
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def charinfo(self, ctx):
         author_id = ctx.message.author.id
-        get_next_level = self.next_level[self.level[author_id] -1 ][0]
+        get_next_level = self.next_level[self.level[author_id] - 1][0]
         get_next_xp = self.next_level[get_next_level - 2][1]
         get_xp_remain = get_next_xp - self.xp[author_id]
         self.get_next_level[author_id] = get_next_level

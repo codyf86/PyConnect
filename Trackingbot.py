@@ -26,13 +26,12 @@ class Trackingbot:
 ###############################################################################
     def __init__(self, bot):
         self.bot = bot
-        self.trackingbot_task = self.bot.loop.create_task(self.track())
-        self.trackingbot_task.cancel()
+        self.trackingbot_task = False
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
         self.count_limit = self.get_cfg('[COUNT_LIMIT]')
-        self.parse   = self.get_cfg('[PARSE]')
-        self.role    = self.get_cfg('[ROLE]')
+        self.parse = self.get_cfg('[PARSE]')
+        self.role  = self.get_cfg('[ROLE]')
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
@@ -130,7 +129,7 @@ class Trackingbot:
             description='Start Trackingbot loop.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def start(self, ctx):
-        if self.trackingbot_task.done():
+        if self.trackingbot_task is False:
             self.trackingbot_task = self.bot.loop.create_task(self.track())
             await ctx.send("Tracking loop started!")
         else:
@@ -156,8 +155,9 @@ class Trackingbot:
             description='Stop Trackingbot loop.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def stop(self, ctx):
-        if not self.trackingbot_task.done():
+        if self.trackingbot_task is not False:
             self.trackingbot_task.cancel()
+            self.trackingbot_task = False
             await ctx.send('Tracking loop stopped!')
         else:
             await ctx.send('Tracking loop is not currently running!')
