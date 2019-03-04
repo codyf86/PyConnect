@@ -32,6 +32,7 @@ class Trackingbot:
         self.count_limit = self.get_cfg('[COUNT_LIMIT]')
         self.parse = self.get_cfg('[PARSE]')
         self.role  = self.get_cfg('[ROLE]')
+        self.safety  = self.get_cfg('[SAFETY]')
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
@@ -71,6 +72,7 @@ class Trackingbot:
         self.count_limit = self.get_cfg('[COUNT_LIMIT]')
         self.parse = self.get_cfg('[PARSE]')
         self.role  = self.get_cfg('[ROLE]')
+        self.safety  = self.get_cfg('[SAFETY]')
         self.target1  = self.get_cfg('[TARGET1]')
         self.target2  = self.get_cfg('[TARGET2]')
         self.target3  = self.get_cfg('[TARGET3]')
@@ -103,6 +105,9 @@ class Trackingbot:
         if arg1 == 'role':
             self.role = arg2
             await ctx.send('Set role ID to: {}'.format(self.role))
+        if arg1 == 'safety':
+            self.safety = arg2
+            await ctx.send('Set role ID to: {}'.format(self.safety))
         if arg1 == 'target1':
             self.target1 = arg2
             await ctx.send('Set target1 to: {}'.format(self.target1))
@@ -148,6 +153,7 @@ class Trackingbot:
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def status(self, ctx):
         await ctx.send('(T)echnology for (P)repared (A)egis (R)aiding')
+        await ctx.send('Safety: {}'.format(self.safety))
         await ctx.send('Parsing file: {}'.format(self.parse))
         await ctx.send('Playing audio file: {}'.format(self.audio_file))
         await ctx.send('Batphoning channel_id:role_id:voice_id: {}:{}:{}.'
@@ -175,22 +181,18 @@ class Trackingbot:
         while not self.bot.is_closed():
             channel = self.bot.get_channel(int(self.channel))
             voice = self.bot.get_channel(int(self.voice))
-            for line in Pygtail(self.parse):
+            for line in Pygtail(self.parse, paranoid=True):
                 target_list = [self.target1 in line, self.target2 in line,
                         self.target3 in line, self.target4 in line,
                                 self.target5 in line]
                 if any(target_list):
                     self.count += 1
                     self.fte = line
-                    if (self.count <= int(self.count_limit)): 
-                        print('Target found! Activating bat signal!')
+                    print('Target found! Activating bat signal!')
+                    if (self.count <= int(self.count_limit)
+                            and self.safety is not True): 
                         await channel.send('<@&{}> -> {}'
                                 .format(self.role, self.fte))
-                        mp3 = MP3(self.audio_file)
-                        player = await voice.connect()
-                        player.play(discord.FFmpegPCMAudio(self.audio_file))
-                        await asyncio.sleep(mp3.info.length + 1)
-                        await player.disconnect()
             await asyncio.sleep(5)
 
 ###############################################################################
