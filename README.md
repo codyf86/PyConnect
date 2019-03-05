@@ -1,4 +1,5 @@
 # PyConnect
+# v1.01
 To use the bot.
 
 1.) Add the bot user token to the config file under [TOKEN].

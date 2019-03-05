@@ -29,7 +29,7 @@ class Trackingbot:
         self.count = 0
         self.fte = ''
         self.trackingbot_task = False
-        self.version = '1.00'
+        self.version = '1.01'
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
         self.count_limit = self.get_cfg('[COUNT_LIMIT]')
@@ -67,7 +67,9 @@ class Trackingbot:
             description='Reload config variables.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def reload(self, ctx):
-        await ctx.send('Reloading config variables...')
+        embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                title='Reloading config variables.')
+        await ctx.send(embed=embed)
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
         self.count_limit = self.get_cfg('[COUNT_LIMIT]')
@@ -80,32 +82,40 @@ class Trackingbot:
         self.target4  = self.get_cfg('[TARGET4]')
         self.target5  = self.get_cfg('[TARGET5]')
         self.voice = self.get_cfg('[VOICE]')
-        await ctx.send('OK!')
 
 ###############################################################################
     @commands.command(name='set', brief='Set config variable.',
             description='Set config variable.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def set(self, ctx, arg1, arg2):
+        embed = discord.Embed(colour=discord.Colour(0x7ed321), title='Set:')
         if arg1 == 'audio_file':
             self.channel = arg2
-            await ctx.send('Set audio file to: {}'.format(self.audio_file))
+            embed.add_field(name='Audio File:', value=self.audio_file,
+                    inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'channel':
             self.channel = arg2
-            await ctx.send('Set channel ID to: {}'.format(self.channel))
+            embed.add_field(name='Channel ID:', value=self.channel,
+                    inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'count':
             self.count = arg2
-            await ctx.send('Batphone count set to: {}'.format(self.count))
+            embed.add_field(name='Count:', value=self.count, inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'count_limit':
             self.count_limit = arg2
-            await ctx.send('Batphone count limit set to: {}'
-                    .format(self.count_limit))
+            embed.add_field(name='Count Limit:', value=self.count_limit,
+                    inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'parse':
             self.parse = arg2
-            await ctx.send('Set parse file to: {}'.format(self.parse))
+            embed.add_field(name='Log File:', value=self.parse, inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'role':
             self.role = arg2
-            await ctx.send('Set role ID to: {}'.format(self.role))
+            embed.add_field(name='Role ID:', value=self.role, inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'safety':
             if arg2 == 'true':
                 self.safety = True
@@ -113,33 +123,41 @@ class Trackingbot:
                 self.safety = False
             else:
                 await ctx.send('Invalid value input.')
-            await ctx.send('Safety set to: {}'.format(self.safety))
+            embed.add_field(name='Safety:', value=self.safety, inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'target1':
             self.target1 = arg2
-            await ctx.send('Set target1 to: {}'.format(self.target1))
+            embed.add_field(name='Target 1:', value=self.target1, inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'target2':
             self.target2 = arg2
-            await ctx.send('Set target2 to: {}'.format(self.target2))
+            embed.add_field(name='Target 2:', value=self.target2, inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'target3':
             self.target3 = arg2
-            await ctx.send('Set target3 to: {}'.format(self.target3))
+            embed.add_field(name='Target 3:', value=self.target3, inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'target4':
             self.target4 = arg2
-            await ctx.send('Set target4 to: {}'.format(self.target4))
+            embed.add_field(name='Target 4:', value=self.target4, inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'target5':
             self.target5 = arg2
-            await ctx.send('Set target5 to: {}'.format(self.target5))
+            embed.add_field(name='Target 5:', value=self.target5, inline=False)
+            await ctx.send(embed=embed)
         if arg1 == 'voice':
             self.voice = arg2
-            await ctx.send('Set voice ID to: {}'.format(self.voice))
-        await ctx.send('OK!')
+            embed.add_field(name='Voice ID:', value=self.voice, inline=False)
+            await ctx.send(embed=embed)
 
 ###############################################################################
     @commands.command(name='shutdown', brief='Shutdown bot.',
             description='Shutdown bot.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def shutdown(self, ctx):
-        await ctx.send('Shutting down!')
+        embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                title='Shutting Down!')
+        await ctx.send(embed=embed)
         await self.bot.close()
 
 ###############################################################################
@@ -149,26 +167,36 @@ class Trackingbot:
     async def start(self, ctx):
         if self.trackingbot_task is False:
             self.trackingbot_task = self.bot.loop.create_task(self.track())
-            await ctx.send("Tracking loop started!")
+            embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                    title='Tracking loop started!')
+            await ctx.send(embed=embed)
         else:
-            await ctx.send("Tracking loop is already running!")
+            embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                    title='Tracking loop is already running!')
+            await ctx.send(embed=embed)
 
 ###############################################################################
     @commands.command(name='status', brief='Display bot status.',
             description='Display bot status.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def status(self, ctx):
-        await ctx.send('(T)echnology for (P)repared (A)egis (R)aiding version'
-                ' {}.'.format(self.version))
-        await ctx.send('Safety: {}'.format(self.safety))
-        await ctx.send('Parsing file: {}'.format(self.parse))
-        await ctx.send('Playing audio file: {}'.format(self.audio_file))
-        await ctx.send('Batphoning channel_id:role_id:voice_id: {}:{}:{}.'
-                .format(self.channel, self.role, self.voice))
-        await ctx.send('Trackingbot: {}, {}, {}, {}, and {}'
-                .format(self.target1, self.target2, self.target3,
-                        self.target4, self.target5))
-        await ctx.send('OK!')
+        embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                title='(T)echnology for (P)repared (A)egis (R)aiding'
+                        '\nVersion {}.'.format(self.version))
+        embed.add_field(name='Safety:', value=self.safety, inline=False)
+        embed.add_field(name='Count:', value=self.count, inline=False)
+        embed.add_field(name='Count Limit:', value=self.count_limit, inline=False)
+        embed.add_field(name='Parsing File:', value=self.parse, inline=False)
+        embed.add_field(name='Audio File:', value=self.audio_file, inline=False)
+        embed.add_field(name='Channel ID:', value=self.channel, inline=False)
+        embed.add_field(name='Role ID:', value=self.role, inline=False)
+        embed.add_field(name='Voice ID', value=self.voice, inline=False)
+        embed.add_field(name='Target 1:', value=self.target1, inline=False)
+        embed.add_field(name='Target 2:', value=self.target2, inline=False)
+        embed.add_field(name='Target 3:', value=self.target3, inline=False)
+        embed.add_field(name='Target 4:', value=self.target4, inline=False)
+        embed.add_field(name='Target 5:', value=self.target5, inline=False)
+        await ctx.send(embed=embed)
 
 ###############################################################################
     @commands.command(name='stop', brief='Stop Tracking loop.',
@@ -178,9 +206,13 @@ class Trackingbot:
         if self.trackingbot_task is not False:
             self.trackingbot_task.cancel()
             self.trackingbot_task = False
-            await ctx.send('Tracking loop stopped!')
+            embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                    title='Tracking loop stopped!')
+            await ctx.send(embed=embed)
         else:
-            await ctx.send('Tracking loop is not currently running!')
+            embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                    title='Tracking loop is not currently running!')
+            await ctx.send(embed=embed)
 
 ###############################################################################
     async def track(self):
