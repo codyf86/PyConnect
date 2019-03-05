@@ -26,7 +26,10 @@ class Trackingbot:
 ###############################################################################
     def __init__(self, bot):
         self.bot = bot
+        self.count = 0
+        self.fte = ''
         self.trackingbot_task = False
+        self.version = '1.00'
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
         self.count_limit = self.get_cfg('[COUNT_LIMIT]')
@@ -39,8 +42,6 @@ class Trackingbot:
         self.target4  = self.get_cfg('[TARGET4]')
         self.target5  = self.get_cfg('[TARGET5]')
         self.voice = self.get_cfg('[VOICE]')
-        self.count = 0
-        self.fte = ''
 
 ###############################################################################
     @commands.command(name='batphone', brief='Trigger voice batphone.',
@@ -106,8 +107,13 @@ class Trackingbot:
             self.role = arg2
             await ctx.send('Set role ID to: {}'.format(self.role))
         if arg1 == 'safety':
-            self.safety = arg2
-            await ctx.send('Set role ID to: {}'.format(self.safety))
+            if arg2 == 'true':
+                self.safety = True
+            elif arg2 == 'false':
+                self.safety = False
+            else:
+                await ctx.send('Invalid value input.')
+            await ctx.send('Safety set to: {}'.format(self.safety))
         if arg1 == 'target1':
             self.target1 = arg2
             await ctx.send('Set target1 to: {}'.format(self.target1))
@@ -152,7 +158,8 @@ class Trackingbot:
             description='Display bot status.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def status(self, ctx):
-        await ctx.send('(T)echnology for (P)repared (A)egis (R)aiding')
+        await ctx.send('(T)echnology for (P)repared (A)egis (R)aiding version'
+                ' {}.'.format(self.version))
         await ctx.send('Safety: {}'.format(self.safety))
         await ctx.send('Parsing file: {}'.format(self.parse))
         await ctx.send('Playing audio file: {}'.format(self.audio_file))
@@ -180,8 +187,7 @@ class Trackingbot:
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             channel = self.bot.get_channel(int(self.channel))
-            voice = self.bot.get_channel(int(self.voice))
-            for line in Pygtail(self.parse, paranoid=True):
+            for line in Pygtail(self.parse, paranoid=True, copytruncate=False):
                 target_list = [self.target1 in line, self.target2 in line,
                         self.target3 in line, self.target4 in line,
                                 self.target5 in line]
