@@ -33,6 +33,7 @@ class Trackingbot:
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
         self.count_limit = self.get_cfg('[COUNT_LIMIT]')
+        self.embed = self.get_cfg('[EMBED]')
         self.parse = self.get_cfg('[PARSE]')
         self.role  = self.get_cfg('[ROLE]')
         self.safety  = self.get_cfg('[SAFETY]')
@@ -48,12 +49,29 @@ class Trackingbot:
             description='Trigger voice batphone.')
     @commands.cooldown(1, 30, commands.BucketType.channel)
     async def batphone(self, ctx):
+        embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                title='Activating voice batphone!')
+        print('Activating voice bat phone!')
+        await ctx.send(embed=embed)
         mp3 = MP3(self.audio_file)
         voice = self.bot.get_channel(int(self.voice))
         player = await voice.connect()
         player.play(discord.FFmpegPCMAudio(self.audio_file))
         await asyncio.sleep(mp3.info.length + 1)
         await player.disconnect()
+
+###############################################################################
+    @commands.command(name='embed', brief='Embed the contents of a file.',
+            description='Embed the contents of a file.')
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def embed(self, ctx):
+        var = self.get_cfg('[EMBED]')
+        with closing(open(var, 'r')) as file:
+            buffer = file.read(None).splitlines()
+            embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                    title='Embed:')
+            embed.add_field(name=var, value=buffer, inline=False)
+            await ctx.send(embed=embed)
 
 ###############################################################################
     def get_cfg(self, arg):
@@ -73,6 +91,7 @@ class Trackingbot:
         self.audio_file = self.get_cfg('[AUDIO_FILE]')
         self.channel = self.get_cfg('[CHANNEL]')
         self.count_limit = self.get_cfg('[COUNT_LIMIT]')
+        self.embed = self.get_cfg('[EMBED]')
         self.parse = self.get_cfg('[PARSE]')
         self.role  = self.get_cfg('[ROLE]')
         self.safety  = self.get_cfg('[SAFETY]')
@@ -107,6 +126,10 @@ class Trackingbot:
             self.count_limit = arg2
             embed.add_field(name='Count Limit:', value=self.count_limit,
                     inline=False)
+            await ctx.send(embed=embed)
+        if arg1 == 'embed':
+            self.embed = arg2
+            embed.add_field(name='Embed File:', value=self.embed, inline=False)
             await ctx.send(embed=embed)
         if arg1 == 'parse':
             self.parse = arg2
@@ -183,9 +206,11 @@ class Trackingbot:
         embed = discord.Embed(colour=discord.Colour(0x7ed321),
                 title='(T)echnology for (P)repared (A)egis (R)aiding'
                         '\nVersion {}.'.format(self.version))
-        embed.add_field(name='Safety:', value=self.safety, inline=False)
+        embed.add_field(name='Safety Trigger:', value=self.safety, inline=False)
         embed.add_field(name='Count:', value=self.count, inline=False)
-        embed.add_field(name='Count Limit:', value=self.count_limit, inline=False)
+        embed.add_field(name='Count Limit:', value=self.count_limit,
+                inline=False)
+        embed.add_field(name='Embed File:', value=self.embed, inline=False)
         embed.add_field(name='Parsing File:', value=self.parse, inline=False)
         embed.add_field(name='Audio File:', value=self.audio_file, inline=False)
         embed.add_field(name='Channel ID:', value=self.channel, inline=False)
@@ -226,7 +251,7 @@ class Trackingbot:
                 if any(target_list):
                     self.count += 1
                     self.fte = line
-                    print('Target found! Activating bat signal!')
+                    print('Target found! Activating bat phone!')
                     if (self.count <= int(self.count_limit)
                             and self.safety is not True): 
                         await channel.send('<@&{}> -> {}'
