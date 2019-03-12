@@ -15,11 +15,11 @@
 
 #!    Copyright Cody Ferber, 2019.
 ###############################################################################
-from Trackingbot import *
 from contextlib import closing
 from discord.ext import commands
 import asyncio
 import discord
+import json
 
 class Client:
 ###############################################################################
@@ -52,7 +52,10 @@ class Client:
 ###############################################################################
 def main():
     with Client() as client:
-        client.bot.run(Trackingbot.get_cfg(None, '[TOKEN]'))
+        with open('PyConnect.json') as config_file:
+            config = json.load(config_file)
+            token = config['token']
+        client.bot.run(token)
 
 if __name__ == "__main__":
     main()

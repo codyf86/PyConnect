@@ -21,6 +21,7 @@ from mutagen.mp3 import MP3
 from pygtail import Pygtail
 import asyncio
 import discord
+import json
 
 class Trackingbot:
 ###############################################################################
@@ -29,20 +30,22 @@ class Trackingbot:
         self.count = 0
         self.fte = ''
         self.trackingbot_task = False
-        self.version = '1.01'
-        self.audio_file = self.get_cfg('[AUDIO_FILE]')
-        self.channel = self.get_cfg('[CHANNEL]')
-        self.count_limit = self.get_cfg('[COUNT_LIMIT]')
-        self.embed = self.get_cfg('[EMBED]')
-        self.parse = self.get_cfg('[PARSE]')
-        self.role  = self.get_cfg('[ROLE]')
-        self.safety  = self.get_cfg('[SAFETY]')
-        self.target1  = self.get_cfg('[TARGET1]')
-        self.target2  = self.get_cfg('[TARGET2]')
-        self.target3  = self.get_cfg('[TARGET3]')
-        self.target4  = self.get_cfg('[TARGET4]')
-        self.target5  = self.get_cfg('[TARGET5]')
-        self.voice = self.get_cfg('[VOICE]')
+        self.version = '1.02'
+        with open('PyConnect.json') as config_file:
+            self.config = json.load(config_file)
+            self.audio_file = self.config['audio_file']
+            self.channel = self.config['channel']
+            self.count_limit = self.config['count_limit']
+            self.embed = self.config['embed']
+            self.parse = self.config['parse']
+            self.role  = self.config['role']
+            self.safety  = self.config['safety']
+            self.target1  = self.config['target1']
+            self.target2  = self.config['target2']
+            self.target3  = self.config['target3']
+            self.target4  = self.config['target4']
+            self.target5  = self.config['target5']
+            self.voice = self.config['voice']
 
 ###############################################################################
     @commands.command(name='batphone', brief='Trigger voice batphone.',
@@ -74,13 +77,6 @@ class Trackingbot:
             await ctx.send(embed=embed)
 
 ###############################################################################
-    def get_cfg(self, arg):
-        with closing(open('PyConnect.ini', 'r')) as file:
-            buffer = file.read(None).splitlines()
-            value = buffer.pop(buffer.index(arg) + 1)
-            return value
-
-###############################################################################
     @commands.command(name='reload', brief='Reload config variables.',
             description='Reload config variables.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
@@ -88,19 +84,21 @@ class Trackingbot:
         embed = discord.Embed(colour=discord.Colour(0x7ed321),
                 title='Reloading config variables.')
         await ctx.send(embed=embed)
-        self.audio_file = self.get_cfg('[AUDIO_FILE]')
-        self.channel = self.get_cfg('[CHANNEL]')
-        self.count_limit = self.get_cfg('[COUNT_LIMIT]')
-        self.embed = self.get_cfg('[EMBED]')
-        self.parse = self.get_cfg('[PARSE]')
-        self.role  = self.get_cfg('[ROLE]')
-        self.safety  = self.get_cfg('[SAFETY]')
-        self.target1  = self.get_cfg('[TARGET1]')
-        self.target2  = self.get_cfg('[TARGET2]')
-        self.target3  = self.get_cfg('[TARGET3]')
-        self.target4  = self.get_cfg('[TARGET4]')
-        self.target5  = self.get_cfg('[TARGET5]')
-        self.voice = self.get_cfg('[VOICE]')
+        with open('PyConnect.json') as config_file:
+            self.config = json.load(config_file)
+            self.audio_file = config['audio_file']
+            self.channel = config['channel']
+            self.count_limit = config['count_limit']
+            self.embed = self.config['embed']
+            self.parse = self.config['parse']
+            self.role  = self.config['role']
+            self.safety  = self.config['safety']
+            self.target1  = self.config['target1']
+            self.target2  = self.config['target2']
+            self.target3  = self.config['target3']
+            self.target4  = self.config['target4']
+            self.target5  = self.config['target5']
+            self.voice = self.config['voice']
 
 ###############################################################################
     @commands.command(name='set', brief='Set config variable.',
@@ -206,21 +204,21 @@ class Trackingbot:
         embed = discord.Embed(colour=discord.Colour(0x7ed321),
                 title='(T)echnology for (P)repared (A)egis (R)aiding'
                         '\nVersion {}.'.format(self.version))
-        embed.add_field(name='Safety Trigger:', value=self.safety, inline=False)
+        embed.add_field(name='Audio File:', value=self.audio_file, inline=False)
+        embed.add_field(name='Channel ID:', value=self.channel, inline=False)
         embed.add_field(name='Count:', value=self.count, inline=False)
         embed.add_field(name='Count Limit:', value=self.count_limit,
                 inline=False)
         embed.add_field(name='Embed File:', value=self.embed, inline=False)
         embed.add_field(name='Parsing File:', value=self.parse, inline=False)
-        embed.add_field(name='Audio File:', value=self.audio_file, inline=False)
-        embed.add_field(name='Channel ID:', value=self.channel, inline=False)
         embed.add_field(name='Role ID:', value=self.role, inline=False)
-        embed.add_field(name='Voice ID', value=self.voice, inline=False)
+        embed.add_field(name='Safety Trigger:', value=self.safety, inline=False)
         embed.add_field(name='Target 1:', value=self.target1, inline=False)
         embed.add_field(name='Target 2:', value=self.target2, inline=False)
         embed.add_field(name='Target 3:', value=self.target3, inline=False)
         embed.add_field(name='Target 4:', value=self.target4, inline=False)
         embed.add_field(name='Target 5:', value=self.target5, inline=False)
+        embed.add_field(name='Voice ID', value=self.voice, inline=False)
         await ctx.send(embed=embed)
 
 ###############################################################################
