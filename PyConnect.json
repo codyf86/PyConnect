@@ -1,16 +1,22 @@
 {
-  "audio_file" : "batman.mp3",
-  "channel" : "465752046360854550",
   "count_limit" : "10",
-  "embed" : "embed.html",
-  "parse" : "eqlog_Aaradone_project1999.txt",
-  "role" : "547964660041646104",
+  "file" : {
+    "audio" : "batman.mp3",
+    "embed" : "embed.html",
+    "parse" : "eqlog_Aaradone_project1999.txt"
+  },
+  "id" : {
+    "channel" : "465752046360854550",
+    "role" : "547964660041646104",
+    "voice" : "546944508248588298"
+  },
   "safety" : "False",
-  "target1" : "Attacking target1",
-  "target2" : "Attacking target2",
-  "target3" : "Attacking target3",
-  "target4" : "Attacking target4",
-  "target5" : "Attacking target5",
-  "token" : "",
-  "voice" : "546944508248588298"
+  "target" : {
+    "1" : "Attacking target1",
+    "2" : "Attacking target2",
+    "3" : "Attacking target3",
+    "4" : "Attacking target4",
+    "5" : "Attacking target5"
+  },
+  "token" : ""
 }

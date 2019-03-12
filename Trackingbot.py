@@ -33,19 +33,19 @@ class Trackingbot:
         self.version = '1.02'
         with open('PyConnect.json') as config_file:
             self.config = json.load(config_file)
-            self.audio_file = self.config['audio_file']
-            self.channel = self.config['channel']
+            self.audio = self.config['file']['audio']
+            self.channel = self.config['id']['channel']
             self.count_limit = self.config['count_limit']
-            self.embed = self.config['embed']
-            self.parse = self.config['parse']
-            self.role  = self.config['role']
+            self.embed = self.config['file']['embed']
+            self.parse = self.config['file']['parse']
+            self.role  = self.config['id']['role']
             self.safety  = self.config['safety']
-            self.target1  = self.config['target1']
-            self.target2  = self.config['target2']
-            self.target3  = self.config['target3']
-            self.target4  = self.config['target4']
-            self.target5  = self.config['target5']
-            self.voice = self.config['voice']
+            self.target1  = self.config['target']['1']
+            self.target2  = self.config['target']['2']
+            self.target3  = self.config['target']['3']
+            self.target4  = self.config['target']['4']
+            self.target5  = self.config['target']['5']
+            self.voice = self.config['id']['voice']
 
 ###############################################################################
     @commands.command(name='batphone', brief='Trigger voice batphone.',
@@ -56,10 +56,10 @@ class Trackingbot:
                 title='Activating voice batphone!')
         print('Activating voice bat phone!')
         await ctx.send(embed=embed)
-        mp3 = MP3(self.audio_file)
+        mp3 = MP3(self.audio)
         voice = self.bot.get_channel(int(self.voice))
         player = await voice.connect()
-        player.play(discord.FFmpegPCMAudio(self.audio_file))
+        player.play(discord.FFmpegPCMAudio(self.audio))
         await asyncio.sleep(mp3.info.length + 1)
         await player.disconnect()
 
@@ -86,19 +86,19 @@ class Trackingbot:
         await ctx.send(embed=embed)
         with open('PyConnect.json') as config_file:
             self.config = json.load(config_file)
-            self.audio_file = config['audio_file']
-            self.channel = config['channel']
-            self.count_limit = config['count_limit']
-            self.embed = self.config['embed']
-            self.parse = self.config['parse']
-            self.role  = self.config['role']
+            self.audio = self.config['file']['audio']
+            self.channel = self.config['id']['channel']
+            self.count_limit = self.config['count_limit']
+            self.embed = self.config['file']['embed']
+            self.parse = self.config['file']['parse']
+            self.role  = self.config['id']['role']
             self.safety  = self.config['safety']
-            self.target1  = self.config['target1']
-            self.target2  = self.config['target2']
-            self.target3  = self.config['target3']
-            self.target4  = self.config['target4']
-            self.target5  = self.config['target5']
-            self.voice = self.config['voice']
+            self.target1  = self.config['target']['1']
+            self.target2  = self.config['target']['2']
+            self.target3  = self.config['target']['3']
+            self.target4  = self.config['target']['4']
+            self.target5  = self.config['target']['5']
+            self.voice = self.config['id']['voice']
 
 ###############################################################################
     @commands.command(name='set', brief='Set config variable.',
@@ -108,8 +108,7 @@ class Trackingbot:
         embed = discord.Embed(colour=discord.Colour(0x7ed321), title='Set:')
         if arg1 == 'audio_file':
             self.channel = arg2
-            embed.add_field(name='Audio File:', value=self.audio_file,
-                    inline=False)
+            embed.add_field(name='Audio File:', value=self.audio, inline=False)
             await ctx.send(embed=embed)
         if arg1 == 'channel':
             self.channel = arg2
@@ -204,13 +203,13 @@ class Trackingbot:
         embed = discord.Embed(colour=discord.Colour(0x7ed321),
                 title='(T)echnology for (P)repared (A)egis (R)aiding'
                         '\nVersion {}.'.format(self.version))
-        embed.add_field(name='Audio File:', value=self.audio_file, inline=False)
+        embed.add_field(name='Audio File:', value=self.audio, inline=False)
         embed.add_field(name='Channel ID:', value=self.channel, inline=False)
         embed.add_field(name='Count:', value=self.count, inline=False)
         embed.add_field(name='Count Limit:', value=self.count_limit,
                 inline=False)
         embed.add_field(name='Embed File:', value=self.embed, inline=False)
-        embed.add_field(name='Parsing File:', value=self.parse, inline=False)
+        embed.add_field(name='Parse File:', value=self.parse, inline=False)
         embed.add_field(name='Role ID:', value=self.role, inline=False)
         embed.add_field(name='Safety Trigger:', value=self.safety, inline=False)
         embed.add_field(name='Target 1:', value=self.target1, inline=False)
