@@ -64,16 +64,15 @@ class Trackingbot:
         await player.disconnect()
 
 ###############################################################################
-    @commands.command(name='embed', brief='Embed the contents of a file.',
+    @commands.command(name='embeded', brief='Embed the contents of a file.',
             description='Embed the contents of a file.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
-    async def embed(self, ctx):
-        var = self.get_cfg('[EMBED]')
-        with closing(open(var, 'r')) as file:
+    async def embeded(self, ctx):
+        with closing(open(self.embed, 'r')) as file:
             buffer = file.read(None).splitlines()
             embed = discord.Embed(colour=discord.Colour(0x7ed321),
                     title='Embed:')
-            embed.add_field(name=var, value=buffer, inline=False)
+            embed.add_field(name=self.embed, value=buffer, inline=False)
             await ctx.send(embed=embed)
 
 ###############################################################################
