@@ -30,7 +30,7 @@ class Trackingbot:
         self.count = 0
         self.fte = ''
         self.trackingbot_task = False
-        self.version = '1.02'
+        self.version = '1.03'
         with open('PyConnect.json') as config_file:
             self.config = json.load(config_file)
             self.audio = self.config['file']['audio']
@@ -68,11 +68,13 @@ class Trackingbot:
             description='Embed the contents of a file.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def embeded(self, ctx):
-        with closing(open(self.embed, 'r')) as file:
-            buffer = file.read(None).splitlines()
+        with closing(open(self.embed, 'r')) as embed_file:
+            config = json.load(embed_file)
             embed = discord.Embed(colour=discord.Colour(0x7ed321),
-                    title='Embed:')
-            embed.add_field(name=self.embed, value=buffer, inline=False)
+                    title=config['title'])
+            for i in range(len(config['field'])):
+                embed.add_field(name=config['field'][i]['name'],
+                        value=config['field'][i]['value'], inline=False)
             await ctx.send(embed=embed)
 
 ###############################################################################

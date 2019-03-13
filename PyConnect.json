@@ -2,7 +2,7 @@
   "count_limit" : "10",
   "file" : {
     "audio" : "batman.mp3",
-    "embed" : "embed.html",
+    "embed" : "embed.json",
     "parse" : "eqlog_Aaradone_project1999.txt"
   },
   "id" : {

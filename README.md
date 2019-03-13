@@ -1,4 +1,4 @@
-# PyConnect v1.02
+# PyConnect v1.03
 To use the bot edit PyConnect.json.
 
 1.) Change "channel", "role", and "voice" to the appropriate id's.
