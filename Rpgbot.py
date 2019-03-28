@@ -117,18 +117,18 @@ class Rpgbot:
     @commands.cooldown(10, 30, commands.BucketType.channel)
     async def roll(self, ctx, *args):
         x = 0
-        await ctx.send('A random die is rolled by {}.'.format(
+        await ctx.send('A magic die is rolled by {}.'.format(
                 ctx.message.author.name))
         for num in args:
             if num:
                 x += 1
         if x == 1:
             await ctx.send('It could have been any number'
-                    'between 0 and {}, but this time it turned up a {}.'
+                    ' between 0 and {}, but this time it turned up a {}.'
                             .format(args[0], str(randint(0, int(args[0])))))
         elif x == 2:
             await ctx.send('It could have been any number'
-                    'between {} and {}, but this time it turned up a {}.'
+                    ' between {} and {}, but this time it turned up a {}.'
                             .format(args[0], args[1], str(randint(int(args[0]),
                                     int(args[1])))))
         else:
