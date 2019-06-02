@@ -1,22 +1,22 @@
 {
-  "count_limit" : "10",
-  "file" : {
-    "audio" : "batman.mp3",
-    "embed" : "embed.json",
-    "parse" : "eqlog_Aaradone_project1999.txt"
-  },
-  "id" : {
-    "channel" : "465752046360854550",
-    "role" : "547964660041646104",
-    "voice" : "546944508248588298"
-  },
-  "safety" : "False",
-  "target" : {
-    "1" : "Attacking target1",
-    "2" : "Attacking target2",
-    "3" : "Attacking target3",
-    "4" : "Attacking target4",
-    "5" : "Attacking target5"
-  },
-  "token" : ""
+    "count_limit": "25",
+    "file": {
+        "audio": "batman.mp3",
+        "parse": "eqlog_Aaradone_project1999.txt"
+    },
+    "id": {
+        "channel": "584863736834293772",
+        "role": "584864097322139682",
+        "voice": "584863678843584512"
+    },
+    "safety": "False",
+    "target": {
+        "1": "Attacking target1",
+        "2": "Attacking target2",
+        "3": "Attacking target3",
+        "4": "Attacking target4",
+        "5": "Attacking target5"
+    },
+    "token": ""
 }
+
