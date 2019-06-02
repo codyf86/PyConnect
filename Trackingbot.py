@@ -202,8 +202,7 @@ class Trackingbot:
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def status(self, ctx):
         embed = discord.Embed(colour=discord.Colour(0x7ed321),
-                title='(T)echnology for (P)repared (A)egis (R)aiding'
-                        '\nVersion {}.'.format(self.version))
+                title='Riot Tracking Bot:\nVersion {}.'.format(self.version))
         embed.add_field(name='Audio File:', value=self.audio, inline=False)
         embed.add_field(name='Channel ID:', value=self.channel, inline=False)
         embed.add_field(name='Count:', value=self.count, inline=False)
