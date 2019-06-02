@@ -36,7 +36,6 @@ class Trackingbot:
             self.audio = self.config['file']['audio']
             self.channel = self.config['id']['channel']
             self.count_limit = self.config['count_limit']
-            self.embed = self.config['file']['embed']
             self.parse = self.config['file']['parse']
             self.role  = self.config['id']['role']
             self.safety  = self.config['safety']
@@ -64,20 +63,6 @@ class Trackingbot:
         await player.disconnect()
 
 ###############################################################################
-    @commands.command(name='embeded', brief='Embed the contents of a file.',
-            description='Embed the contents of a file.')
-    @commands.cooldown(1, 5, commands.BucketType.channel)
-    async def embeded(self, ctx):
-        with closing(open(self.embed, 'r')) as embed_file:
-            config = json.load(embed_file)
-            embed = discord.Embed(colour=discord.Colour(0x7ed321),
-                    title=config['title'])
-            for i in range(len(config['field'])):
-                embed.add_field(name=config['field'][i]['name'],
-                        value=config['field'][i]['value'], inline=False)
-            await ctx.send(embed=embed)
-
-###############################################################################
     @commands.command(name='reload', brief='Reload config variables.',
             description='Reload config variables.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
@@ -90,7 +75,6 @@ class Trackingbot:
             self.audio = self.config['file']['audio']
             self.channel = self.config['id']['channel']
             self.count_limit = self.config['count_limit']
-            self.embed = self.config['file']['embed']
             self.parse = self.config['file']['parse']
             self.role  = self.config['id']['role']
             self.safety  = self.config['safety']
@@ -124,10 +108,6 @@ class Trackingbot:
             self.count_limit = arg2
             embed.add_field(name='Count Limit:', value=self.count_limit,
                     inline=False)
-            await ctx.send(embed=embed)
-        if arg1 == 'embed':
-            self.embed = arg2
-            embed.add_field(name='Embed File:', value=self.embed, inline=False)
             await ctx.send(embed=embed)
         if arg1 == 'parse':
             self.parse = arg2
@@ -208,7 +188,6 @@ class Trackingbot:
         embed.add_field(name='Count:', value=self.count, inline=False)
         embed.add_field(name='Count Limit:', value=self.count_limit,
                 inline=False)
-        embed.add_field(name='Embed File:', value=self.embed, inline=False)
         embed.add_field(name='Parse File:', value=self.parse, inline=False)
         embed.add_field(name='Role ID:', value=self.role, inline=False)
         embed.add_field(name='Safety Trigger:', value=self.safety, inline=False)
