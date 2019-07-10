@@ -22,20 +22,21 @@ from pygtail import Pygtail
 import asyncio
 import discord
 import json
+import string
+import re
 
 class Trackingbot:
 ###############################################################################
     def __init__(self, bot):
         self.bot = bot
-        self.count = 0
-        self.fte = ''
+        self.line = ''
         self.trackingbot_task = False
-        self.version = '1.03'
+        self.version = '1.04'
         with open('PyConnect.json') as config_file:
             self.config = json.load(config_file)
             self.audio = self.config['file']['audio']
             self.channel_id = self.config['id']['channel']
-            self.count_limit = self.config['count_limit']
+            self.command  = self.config['command']
             self.parse = self.config['file']['parse']
             self.role_id  = self.config['id']['role']
             self.safety  = self.config['safety']
@@ -74,7 +75,7 @@ class Trackingbot:
             self.config = json.load(config_file)
             self.audio = self.config['file']['audio']
             self.channel_id = self.config['id']['channel']
-            self.count_limit = self.config['count_limit']
+            self.command  = self.config['command_prefix']
             self.parse = self.config['file']['parse']
             self.role_id  = self.config['id']['role']
             self.safety  = self.config['safety']
@@ -100,13 +101,9 @@ class Trackingbot:
             embed.add_field(name='Channel ID:', value=self.channel_id,
                     inline=False)
             await ctx.send(embed=embed)
-        if arg1 == 'count':
-            self.count = arg2
-            embed.add_field(name='Count:', value=self.count, inline=False)
-            await ctx.send(embed=embed)
-        if arg1 == 'count_limit':
-            self.count_limit = arg2
-            embed.add_field(name='Count Limit:', value=self.count_limit,
+        if arg1 == 'command':
+            self.command = arg2
+            embed.add_field(name='Command Prefix:', value=self.command,
                     inline=False)
             await ctx.send(embed=embed)
         if arg1 == 'parse':
@@ -198,9 +195,7 @@ class Trackingbot:
                 title='Riot Tracking Bot:\nVersion {}.'.format(self.version))
         embed.add_field(name='Audio File:', value=self.audio, inline=False)
         embed.add_field(name='Channel ID:', value=self.channel_id, inline=False)
-        embed.add_field(name='Count:', value=self.count, inline=False)
-        embed.add_field(name='Count Limit:', value=self.count_limit,
-                inline=False)
+        embed.add_field(name='Command Prefix:', value=self.command, inline=False)
         embed.add_field(name='Parse File:', value=self.parse, inline=False)
         embed.add_field(name='Role ID:', value=self.role_id, inline=False)
         embed.add_field(name='Safety Trigger:', value=self.safety, inline=False)
@@ -237,14 +232,16 @@ class Trackingbot:
                 target_list = [self.target1 in line, self.target2 in line,
                         self.target3 in line, self.target4 in line,
                                 self.target5 in line]
-                if any(target_list):
-                    self.count += 1
-                    self.fte = line
-                    print('Target found! Activating bat phone!')
-                    if (self.count <= int(self.count_limit)
-                            and self.safety is not True): 
+                if self.safety is not True:
+                    if self.command in line:
+                        self.line = re.search("'(.*)'", line)
+                        await channel.send('{}'.format(self.line.group(0)
+                                .replace("'", "")))
+                    if any(target_list):
+                        self.line = re.sub(r'\[.*?\]', '', line)
                         await channel.send('<@&{}> -> {}'
-                                .format(self.role_id, self.fte))
+                                .format(self.role_id, self.line))
+                        # await channel.send('{}'.format(self.line))
             await asyncio.sleep(5)
 
 ###############################################################################
