@@ -1,20 +1,25 @@
 {
-    "count_limit": "25",
     "file": {
         "audio": "batman.mp3",
-        "parse": "eqlog_Aaradone_project1999.txt"
+        "parse": "eqlog_Primals_project1999.txt"
     },
     "id": {
-        "channel": "584863736834293772",
-        "role": "584864097322139682",
-        "voice": "584863678843584512"
+        "channel": "596979839722979329",
+        "role": "585363651318382592",
+        "voice": "585455624838578176"
     },
-    "safety": "False",
+    "sound": {
+        "1": "slowed.mp3",
+        "2": "tashed.mp3",
+        "3": "maloed.mp3",
+        "4": "engage.mp3",
+        "5": "sound5.mp3"
+    },
     "target": {
-        "1": "Attacking target1",
-        "2": "Attacking target2",
-        "3": "Attacking target3",
-        "4": "Attacking target4",
+        "1": "yawns.",
+        "2": "glances nervously about.",
+        "3": "looks very uncomfortable.",
+        "4": "engages",
         "5": "Attacking target5"
     },
     "token": ""

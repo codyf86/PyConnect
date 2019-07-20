@@ -31,15 +31,19 @@ class Trackingbot:
         self.bot = bot
         self.line = ''
         self.trackingbot_task = False
-        self.version = '1.04'
+        self.voice_connected = False
+        self.version = '1.05'
         with open('PyConnect.json') as config_file:
             self.config = json.load(config_file)
             self.audio = self.config['file']['audio']
             self.channel_id = self.config['id']['channel']
-            self.command  = self.config['command']
             self.parse = self.config['file']['parse']
             self.role_id  = self.config['id']['role']
-            self.safety  = self.config['safety']
+            self.sound1  = self.config['sound']['1']
+            self.sound2  = self.config['sound']['2']
+            self.sound3  = self.config['sound']['3']
+            self.sound4  = self.config['sound']['4']
+            self.sound5  = self.config['sound']['5']
             self.target1  = self.config['target']['1']
             self.target2  = self.config['target']['2']
             self.target3  = self.config['target']['3']
@@ -58,10 +62,10 @@ class Trackingbot:
         print('Activating voice bat phone!')
         mp3 = MP3(self.audio)
         voice = self.bot.get_channel(int(self.voice_id))
-        player = await voice.connect()
-        player.play(discord.FFmpegPCMAudio(self.audio))
+        if self.voice_connected is False:
+            self.player = await voice.connect()
+        self.player.play(discord.FFmpegPCMAudio(self.audio))
         await asyncio.sleep(mp3.info.length + 1)
-        await player.disconnect()
 
 ###############################################################################
     @commands.command(name='reload', brief='Reload config variables.',
@@ -75,10 +79,13 @@ class Trackingbot:
             self.config = json.load(config_file)
             self.audio = self.config['file']['audio']
             self.channel_id = self.config['id']['channel']
-            self.command  = self.config['command_prefix']
             self.parse = self.config['file']['parse']
             self.role_id  = self.config['id']['role']
-            self.safety  = self.config['safety']
+            self.sound1  = self.config['sound']['1']
+            self.sound2  = self.config['sound']['2']
+            self.sound3  = self.config['sound']['3']
+            self.sound4  = self.config['sound']['4']
+            self.sound5  = self.config['sound']['5']
             self.target1  = self.config['target']['1']
             self.target2  = self.config['target']['2']
             self.target3  = self.config['target']['3']
@@ -101,11 +108,6 @@ class Trackingbot:
             embed.add_field(name='Channel ID:', value=self.channel_id,
                     inline=False)
             await ctx.send(embed=embed)
-        if arg1 == 'command':
-            self.command = arg2
-            embed.add_field(name='Command Prefix:', value=self.command,
-                    inline=False)
-            await ctx.send(embed=embed)
         if arg1 == 'parse':
             self.parse = arg2
             embed.add_field(name='Log File:', value=self.parse, inline=False)
@@ -113,15 +115,6 @@ class Trackingbot:
         if arg1 == 'role':
             self.role_id = arg2
             embed.add_field(name='Role ID:', value=self.role_id, inline=False)
-            await ctx.send(embed=embed)
-        if arg1 == 'safety':
-            if arg2 == 'true':
-                self.safety = True
-            elif arg2 == 'false':
-                self.safety = False
-            else:
-                await ctx.send('Invalid value input.')
-            embed.add_field(name='Safety:', value=self.safety, inline=False)
             await ctx.send(embed=embed)
         if arg1 == 'target1':
             self.target1 = arg2
@@ -170,6 +163,7 @@ class Trackingbot:
         for voice in self.bot.voice_clients:
             if(voice.guild == ctx.guild):
                 await voice.disconnect()
+                self.voice_connected = False
 
 ###############################################################################
     @commands.command(name='start', brief='Start Tracking loop.',
@@ -195,10 +189,8 @@ class Trackingbot:
                 title='Riot Tracking Bot:\nVersion {}.'.format(self.version))
         embed.add_field(name='Audio File:', value=self.audio, inline=False)
         embed.add_field(name='Channel ID:', value=self.channel_id, inline=False)
-        embed.add_field(name='Command Prefix:', value=self.command, inline=False)
         embed.add_field(name='Parse File:', value=self.parse, inline=False)
         embed.add_field(name='Role ID:', value=self.role_id, inline=False)
-        embed.add_field(name='Safety Trigger:', value=self.safety, inline=False)
         embed.add_field(name='Target 1:', value=self.target1, inline=False)
         embed.add_field(name='Target 2:', value=self.target2, inline=False)
         embed.add_field(name='Target 3:', value=self.target3, inline=False)
@@ -228,21 +220,42 @@ class Trackingbot:
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             channel = self.bot.get_channel(int(self.channel_id))
+            voice = self.bot.get_channel(int(self.voice_id))
+            if self.voice_connected is False:
+                self.player = await voice.connect()
+                self.voice_connected = True
             for line in Pygtail(self.parse, paranoid=True, copytruncate=False):
-                target_list = [self.target1 in line, self.target2 in line,
-                        self.target3 in line, self.target4 in line,
-                                self.target5 in line]
-                if self.safety is not True:
-                    if self.command in line:
-                        self.line = re.search("'(.*)'", line)
-                        await channel.send('{}'.format(self.line.group(0)
-                                .replace("'", "")))
-                    if any(target_list):
-                        self.line = re.sub(r'\[.*?\]', '', line)
-                        await channel.send('<@&{}> -> {}'
-                                .format(self.role_id, self.line))
-                        # await channel.send('{}'.format(self.line))
-            await asyncio.sleep(5)
+                if self.target1 in line:
+                    self.line = re.sub(r'\[.*?\]', '', line)
+                    await channel.send('{}'.format(self.line))
+                    mp3 = MP3(self.sound1)
+                    self.player.play(discord.FFmpegPCMAudio(self.sound1))
+                    await asyncio.sleep(mp3.info.length + 1)
+                if self.target2 in line:
+                    self.line = re.sub(r'\[.*?\]', '', line)
+                    await channel.send('{}'.format(self.line))
+                    mp3 = MP3(self.sound2)
+                    self.player.play(discord.FFmpegPCMAudio(self.sound2))
+                    await asyncio.sleep(mp3.info.length + 1)
+                if self.target3 in line:
+                    self.line = re.sub(r'\[.*?\]', '', line)
+                    await channel.send('{}'.format(self.line))
+                    mp3 = MP3(self.sound3)
+                    self.player.play(discord.FFmpegPCMAudio(self.sound3))
+                    await asyncio.sleep(mp3.info.length + 1)
+                if self.target4 in line:
+                    self.line = re.sub(r'\[.*?\]', '', line)
+                    await channel.send('{}'.format(self.line))
+                    mp3 = MP3(self.sound4)
+                    self.player.play(discord.FFmpegPCMAudio(self.sound4))
+                    await asyncio.sleep(mp3.info.length + 1)
+                if self.target5 in line:
+                    self.line = re.sub(r'\[.*?\]', '', line)
+                    await channel.send('{}'.format(self.line))
+                    mp3 = MP3(self.sound5)
+                    self.player.play(discord.FFmpegPCMAudio(self.sound5))
+                    await asyncio.sleep(mp3.info.length + 1)
+            await asyncio.sleep(2)
 
 ###############################################################################
 def setup(bot):
