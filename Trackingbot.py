@@ -35,10 +35,10 @@ class Trackingbot:
         self.version = '1.05'
         with open('PyConnect.json') as config_file:
             self.config = json.load(config_file)
-            self.audio = self.config['file']['audio']
             self.channel_id = self.config['id']['channel']
             self.parse = self.config['file']['parse']
             self.role_id  = self.config['id']['role']
+            self.sound0 = self.config['sound']['0']
             self.sound1  = self.config['sound']['1']
             self.sound2  = self.config['sound']['2']
             self.sound3  = self.config['sound']['3']
@@ -60,11 +60,11 @@ class Trackingbot:
                 title='Activating voice batphone!')
         await ctx.send(embed=embed)
         print('Activating voice bat phone!')
-        mp3 = MP3(self.audio)
+        mp3 = MP3(self.sound0)
         voice = self.bot.get_channel(int(self.voice_id))
         if self.voice_connected is False:
             self.player = await voice.connect()
-        self.player.play(discord.FFmpegPCMAudio(self.audio))
+        self.player.play(discord.FFmpegPCMAudio(self.sound0))
         await asyncio.sleep(mp3.info.length + 1)
 
 ###############################################################################
@@ -77,10 +77,10 @@ class Trackingbot:
         await ctx.send(embed=embed)
         with open('PyConnect.json') as config_file:
             self.config = json.load(config_file)
-            self.audio = self.config['file']['audio']
             self.channel_id = self.config['id']['channel']
             self.parse = self.config['file']['parse']
             self.role_id  = self.config['id']['role']
+            self.sound0 = self.config['sound']['0']
             self.sound1  = self.config['sound']['1']
             self.sound2  = self.config['sound']['2']
             self.sound3  = self.config['sound']['3']
@@ -191,6 +191,12 @@ class Trackingbot:
         embed.add_field(name='Channel ID:', value=self.channel_id, inline=False)
         embed.add_field(name='Parse File:', value=self.parse, inline=False)
         embed.add_field(name='Role ID:', value=self.role_id, inline=False)
+        embed.add_field(name='Sound 0:', value=self.sound0, inline=False)
+        embed.add_field(name='Sound 1:', value=self.sound1, inline=False)
+        embed.add_field(name='Sound 2:', value=self.sound2, inline=False)
+        embed.add_field(name='Sound 3:', value=self.sound3, inline=False)
+        embed.add_field(name='Sound 4:', value=self.sound4, inline=False)
+        embed.add_field(name='Sound 5:', value=self.sound5, inline=False)
         embed.add_field(name='Target 1:', value=self.target1, inline=False)
         embed.add_field(name='Target 2:', value=self.target2, inline=False)
         embed.add_field(name='Target 3:', value=self.target3, inline=False)
