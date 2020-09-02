@@ -25,7 +25,7 @@ import json
 import string
 import re
 
-class Trackingbot:
+class Trackingbot(commands.Cog):
 ###############################################################################
     def __init__(self, bot):
         self.bot = bot
@@ -77,6 +77,7 @@ class Trackingbot:
         await ctx.send(embed=embed)
         with open('PyConnect.json') as config_file:
             self.config = json.load(config_file)
+            self.audio = self.config['file']['audio']
             self.channel_id = self.config['id']['channel']
             self.parse = self.config['file']['parse']
             self.role_id  = self.config['id']['role']
@@ -100,7 +101,7 @@ class Trackingbot:
     async def set(self, ctx, arg1, arg2):
         embed = discord.Embed(colour=discord.Colour(0x7ed321), title='Set:')
         if arg1 == 'audio_file':
-            self.channel_id = arg2
+            self.audio = arg2
             embed.add_field(name='Audio File:', value=self.audio, inline=False)
             await ctx.send(embed=embed)
         if arg1 == 'channel':

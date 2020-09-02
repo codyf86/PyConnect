@@ -1,26 +1,7 @@
 {
-    "file": {
-        "parse": "eqlog_Primals_project1999.txt"
-    },
-    "id": {
-        "channel": "596979839722979329",
-        "role": "585363651318382592",
-        "voice": "585455624838578176"
-    },
-    "sound": {
-        "0": "batman.mp3",
-        "1": "slowed.mp3",
-        "2": "tashed.mp3",
-        "3": "maloed.mp3",
-        "4": "engage.mp3",
-        "5": "sound5.mp3"
-    },
-    "target": {
-        "1": "yawns.",
-        "2": "glances nervously about.",
-        "3": "looks very uncomfortable.",
-        "4": "engages",
-        "5": "Attacking target5"
+    "server": {
+        "ip": "test-it.dev",
+        "port": "9001"
     },
     "token": ""
 }

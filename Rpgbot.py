@@ -21,7 +21,7 @@ from random import *
 import asyncio
 import discord
 
-class Rpgbot:
+class Rpgbot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.level = {}
