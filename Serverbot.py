@@ -91,6 +91,25 @@ class Serverbot(commands.Cog):
             self.port = self.config['server']['port']
 
 ###############################################################################
+    @commands.command(name='reloadzonequests', brief='Reload zone quests.',
+            description='Reload zone quests.')
+    @commands.cooldown(1, 5, commands.BucketType.channel)
+    async def reloadzonequests(self, ctx, *args):
+        x = 0
+        for num in args:
+            x += 1
+        embed = discord.Embed(colour=discord.Colour(0x7ed321),
+                title='Reloading zone quests.')
+        if x == 1:
+            self.telnet.write(b'reloadzonequests ' + args[0]
+                    .encode('ascii') + b'\n')
+            embed.add_field(name='Telnet:',value=self.telnet.read_until(b'> ')
+                    .decode('ascii'), inline=False)
+        else:
+            embed.add_field(name='Telnet:',value='Invalid number of inputs!')
+        await ctx.send(embed=embed)
+
+###############################################################################
     @commands.command(name='set', brief='Set config variable.',
             description='Set config variable.')
     @commands.cooldown(1, 5, commands.BucketType.channel)
@@ -164,10 +183,15 @@ class Serverbot(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def who(self, ctx):
         self.telnet.write(b'who\n')
+        buffer = self.telnet.read_until(b'> ')
+        buffer_size = 1023
+        chunks = [buffer[i:i+buffer_size]
+                for i in range(0, len(buffer), buffer_size)]
         embed = discord.Embed(colour=discord.Colour(0x7ed321),
                 title='Displaying players online.')
-        embed.add_field(name='Telnet:',value=self.telnet.read_until(b'> ')
-                .decode('ascii'), inline=False)
+        for value in chunks:
+            embed.add_field(name='Telnet:',
+                    value=value.decode('ascii'), inline=False)
         await ctx.send(embed=embed)
 
 ###############################################################################
