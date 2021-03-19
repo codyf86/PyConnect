@@ -1,8 +1,4 @@
 {
-    "server": {
-        "ip": "test-it.dev",
-        "port": "9001"
-    },
     "token": ""
 }
 

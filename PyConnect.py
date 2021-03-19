@@ -36,13 +36,13 @@ class Client:
         self.bot = commands.Bot(command_prefix='!')
         self.on_ready = self.bot.event(self.on_ready)
         self.on_message = self.bot.event(self.on_message)
-        self.bot.load_extension('Serverbot')
+        self.bot.load_extension('Giveawaybot')
 
 ###############################################################################
     async def on_ready(self):
         print('The bot is ready!')
         await self.bot.change_presence(activity=discord.Game(name=
-                'Everquest'))
+                'Giveaways!'))
 
 ###############################################################################
     async def on_message(self, message):
